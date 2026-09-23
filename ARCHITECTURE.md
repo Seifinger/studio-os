@@ -44,6 +44,7 @@ src/
 │  ├─ content/           Betriebsprofil, Telefon, Preise, Öffnungszeiten, Buchungslinks, Aktionen (ADR 0017)
 │  ├─ gastronomy/        Restaurant-Ergänzung: Küchen, Speisekarte, Restaurantprofil
 │  ├─ briefing/          Fragenkatalog und offene Punkte
+│  ├─ quality/           Copy-Regeln, Musterkatalog S1–S10, Build-Gate (ADR 0018)
 │  ├─ hash/              stabiler Hash für Gleichstände
 │  └─ color/             WCAG-Kontrast
 ├─ server/               Nur serverseitig (jede Datei beginnt mit `import "server-only"`).

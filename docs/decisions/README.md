@@ -23,3 +23,4 @@ neues ADR ersetzt (Status „ersetzt durch 00xx“).
 | [0015](0015-provenienz-und-fakten-gate.md) | Provenienzmodell und Fakten-Gate | angenommen |
 | [0016](0016-demo-arten-und-github-veroeffentlichung.md) | Demo-Arten und Veröffentlichung über GitHub | Teil 4 offen |
 | [0017](0017-content-modell.md) | Content-Modell: Profil, Öffnungszeiten, Preise, Speisekarte, Aktionen, Küchen | angenommen |
+| [0018](0018-inhaltsqualitaet.md) | Inhaltsqualität: Copy-Regeln, Musterkatalog, Build-Gate | angenommen |
