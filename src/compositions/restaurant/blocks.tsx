@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 import type { ResolvedAction } from "@/domain/content/actions";
-import { formatOpeningHours } from "@/domain/content/opening-hours";
+import { openingHoursRows } from "@/domain/content/opening-hours";
 import { resolveImageSlot } from "@/domain/design/image-plan";
 
 import styles from "./blocks.module.css";
@@ -97,15 +97,12 @@ export function Hours({ model, weight, title, signature }: BlockProps) {
         {isVisible(hours) ? (
           <DraftBlock draft={hours.kind === "draft"}>
             <ul className={styles.hours}>
-              {formatOpeningHours(hours.value).map((line) => {
-                const [days = "", ...times] = line.split(" ");
-                return (
-                  <li key={line}>
-                    <span className={styles.days}>{days}</span>
-                    <span className={styles.times}>{times.join(" ")}</span>
-                  </li>
-                );
-              })}
+              {openingHoursRows(hours.value).map((row) => (
+                <li key={row.days}>
+                  <span className={styles.days}>{row.days}</span>
+                  <span className={styles.times}>{row.times}</span>
+                </li>
+              ))}
             </ul>
             {hours.value.note ? <p className={styles.note}>{hours.value.note}</p> : null}
           </DraftBlock>

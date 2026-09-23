@@ -59,6 +59,17 @@ describe("Architekturregeln", () => {
     expect(violations).toEqual([]);
   });
 
+  it("Regel 8: compositions importieren weder server noch ui", () => {
+    const violations = allSrc
+      .filter((file) => file.relative.startsWith("src/compositions/"))
+      .flatMap((file) =>
+        importsOf(file.content)
+          .filter((spec) => /^@\/(server|ui|app)(\/|$)|^server-only$/.test(spec))
+          .map((spec) => `${file.relative} importiert ${spec}`),
+      );
+    expect(violations).toEqual([]);
+  });
+
   it('Regel 2: jedes Modul in src/server beginnt mit import "server-only"', () => {
     const violations = production
       .filter((file) => file.relative.startsWith("src/server/"))

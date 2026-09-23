@@ -1,6 +1,6 @@
 # 0016 – Demo-Arten und Veröffentlichung über GitHub
 
-- **Status:** angenommen für Teil 1–3 und 5; **Teil 4 offen** (Entscheidung des Inhabers nötig)
+- **Status:** angenommen; Teil 4 entschieden (Option B), Teil 2 für lokale Lead-Demos geändert durch [ADR 0021](0021-lead-demos-live-aus-google-places.md)
 - **Datum:** 2026-09-23
 - **Bezug:** ergänzt ADR 0014; ROADMAP Stufen 4 und 6; `src/domain/provenance/gate.ts` (`pagePolicy`)
 
@@ -41,6 +41,8 @@ Veröffentlicht werden soll zunächst über GitHub. Geprüft am 2026-09-23 in de
    - **C – ein öffentliches Demo-Repository für beides:** kostenlos, aber echte Betriebsnamen stehen
      öffentlich in der Dateiliste. Nicht empfohlen.
    Empfehlung: B sofort, A sobald Links verschickt werden sollen.
+   **Entschieden am 2026-09-23: B** – Showcases öffentlich über GitHub Pages, Lead-Demos nur lokal
+   (Umsetzung: ADR 0020 und 0021).
 5. **Kundenseiten gehen nicht über GitHub Pages live** (Nutzungsbedingungen); dafür bleibt Stufe 6
    (Vercel oder ein anderer kommerziell zulässiger Host).
 

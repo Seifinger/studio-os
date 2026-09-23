@@ -386,21 +386,19 @@
 }
 
 /*
- * Bewegung je Direction (motion.intensity). „quiet“ bewegt nichts. Die übrigen heben
- * Abschnittsköpfe beim Scrollen leicht an – nur wo der Browser Scroll-Timelines kennt und
- * niemand reduzierte Bewegung verlangt. Ohne Unterstützung steht alles sofort da.
+ * Bewegung je Direction (motion.intensity), höchstens ein Moment je Seite (DESIGN.md §7):
+ * - quiet: nichts bewegt sich.
+ * - editorial: der Kopf des ersten Signature-Abschnitts hebt sich beim Hineinscrollen leicht an.
+ * - expressive: der Name setzt sich einmal beim Laden.
+ * Nur wo der Browser Scroll-Timelines kennt und niemand reduzierte Bewegung verlangt; ohne
+ * Unterstützung steht alles sofort da.
  */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .site[data-motion="editorial"] [data-reveal],
-    .site[data-motion="expressive"] [data-reveal] {
+    .site[data-motion="editorial"] main > [data-signature]:not([data-signature] ~ [data-signature]) [data-reveal] {
       animation: rise linear both;
       animation-range: entry 10% cover 30%;
       animation-timeline: view();
-    }
-
-    .site[data-motion="expressive"] [data-reveal] {
-      --rise: 2.5rem;
     }
   }
 
@@ -412,7 +410,7 @@
 @keyframes rise {
   from {
     opacity: 0.4;
-    transform: translateY(var(--rise, 1.25rem));
+    transform: translateY(1.25rem);
   }
 
   to {

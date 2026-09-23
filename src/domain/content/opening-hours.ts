@@ -99,12 +99,14 @@ function formatDays(days: readonly Weekday[]): string {
   return `${WEEKDAY_LABEL[first]}–${WEEKDAY_LABEL[last]}`;
 }
 
+export type OpeningHoursRow = { readonly days: string; readonly times: string };
+
 /**
- * Deutsche Kurzform, aufeinanderfolgende Tage mit gleichen Zeiten zusammengefasst:
- * ["Mo, Di Ruhetag", "Mi–Fr 11:30–14:00, 17:30–22:00", "Sa 17:00–23:00", "So 11:30–21:00"]
+ * Zeilen für die Anzeige, aufeinanderfolgende Tage mit gleichen Zeiten zusammengefasst:
+ * [{ days: "Mo, Di", times: "Ruhetag" }, { days: "Mi–Fr", times: "11:30–14:00, 17:30–22:00" }]
  */
-export function formatOpeningHours(hours: OpeningHours): string[] {
-  const lines: string[] = [];
+export function openingHoursRows(hours: OpeningHours): OpeningHoursRow[] {
+  const rows: OpeningHoursRow[] = [];
   let group: Weekday[] = [];
   let groupText = "";
 
@@ -114,10 +116,18 @@ export function formatOpeningHours(hours: OpeningHours): string[] {
       group.push(day);
       continue;
     }
-    if (group.length > 0) lines.push(`${formatDays(group)} ${groupText}`);
+    if (group.length > 0) rows.push({ days: formatDays(group), times: groupText });
     group = [day];
     groupText = text;
   }
-  if (group.length > 0) lines.push(`${formatDays(group)} ${groupText}`);
-  return lines;
+  if (group.length > 0) rows.push({ days: formatDays(group), times: groupText });
+  return rows;
+}
+
+/**
+ * Deutsche Kurzform als Text:
+ * ["Mo, Di Ruhetag", "Mi–Fr 11:30–14:00, 17:30–22:00", "Sa 17:00–23:00", "So 11:30–21:00"]
+ */
+export function formatOpeningHours(hours: OpeningHours): string[] {
+  return openingHoursRows(hours).map((row) => `${row.days} ${row.times}`);
 }

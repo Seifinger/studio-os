@@ -175,7 +175,7 @@ Zuordnung der Kandidaten zu den ROADMAP-Stufen:
 | 1 · Fachkern und Content-Modell ✅ | K1, K2, K16, K20 |
 | 2 · Inhaltsqualität ✅ | K7, K8, K18 |
 | 3 · Design Directions und Art Direction ✅ | K9, K10, K11, K12, K19 |
-| 4 · Referenzprojekt: erste Kundenseite | K17 |
+| 4 · Demos als Referenzprojekt ✅ | K17 |
 | 5 · Conversion-Layer | – (neu; nutzt K1/K18) |
 | 6 · Livegang | – |
 | 7 · Datenbank und Studio-Dashboard | K14 |

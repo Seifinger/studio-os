@@ -47,17 +47,22 @@ src/
 │  ├─ quality/           Copy-Regeln, Musterkatalog S1–S10, Build-Gate (ADR 0018)
 │  ├─ design/            Design Direction, Creative Direction, Bildplan, Schriftregister (ADR 0019)
 │  ├─ hash/              stabiler Hash für Gleichstände
-│  └─ color/             WCAG-Kontrast
-├─ catalog/              Kuratierte Studio-Daten: Design Directions, Showcase-Betriebe. Importiert nur domain.
+│  ├─ color/             WCAG-Kontrast
+│  ├─ leads/             Place Details → Profil im Speicher (Lead-Demos, ADR 0021)
+│  └─ publishing/        Veröffentlichungsprüfung des statischen Exports (ADR 0020)
+├─ catalog/              Kuratierte Studio-Daten: Design Directions, 14 Beispielhäuser, Lead-Demo-Dramaturgie. Importiert nur domain.
 ├─ server/               Nur serverseitig (jede Datei beginnt mit `import "server-only"`).
 │  ├─ env.ts             Einzige Stelle, die process.env liest (Zod-validiert).
 │  ├─ health.ts          Health-Report.
-│  └─ integrations/      Ports (Schnittstellen) und später Adapter zu Google Places, Supabase, Resend, Vercel, KI.
+│  ├─ studio-operator.ts Betreiberangaben für Impressum/Datenschutz der Beispielseiten.
+│  ├─ leads/             Lead-Demo laden, lokale Freischaltung.
+│  └─ integrations/      Ports, Field Masks und Adapter (Google Place Details); später Supabase, Resend, Vercel, KI.
 ├─ ui/                   (später) Funktionale UI des Studios: Button, Feld, Tabelle … – ein stabiles Token-Set.
-└─ compositions/         (später) Kreative Website-Kompositionen je Betrieb: Sektionen, Signaturen, Themes.
+└─ compositions/         Kreative Website-Kompositionen. restaurant/: Seite aus Profil + Direction + Dramaturgie (ADR 0020).
 tests/
 ├─ unit/                 Übergreifende Tests (z. B. Architekturregeln).
-└─ e2e/                  Playwright (vorbereitet: ein Smoke-Test).
+├─ export/               Veröffentlichungsprüfung gegen out/ (npm run check:export).
+└─ e2e/                  Playwright: Smoke-Test, Beispielseiten mobil und Desktop.
 ```
 
 ### Abhängigkeitsregeln
@@ -66,7 +71,7 @@ tests/
 app ──► server ──► domain
  │        └──► integrations (Ports) ◄── Adapter (später)
  ├──► ui ──────► domain (nur Typen)
- └──► compositions ──► domain (nur Typen und reine Funktionen)
+ └──► compositions ──► domain, catalog (Daten)
 ```
 
 1. `domain` importiert nichts aus `app`, `server`, `ui`, `compositions`, React oder Next.
@@ -79,8 +84,16 @@ app ──► server ──► domain
    sonst nirgends direkt importiert – Tests ersetzen sie durch Fakes.
 6. Kein Import aus den Referenzprojekten `../gastro-webagentur` oder `../gastro-v3`.
 
-Regeln 1, 2, 3 und 6 prüft `tests/unit/architecture.test.ts` bei jedem `npm test`. Regel 4 und 5
-werden geprüft, sobald die Ordner existieren (ESLint-Regel `no-restricted-imports`, eigener ADR).
+Regeln 1, 2, 3 und 6 prüft `tests/unit/architecture.test.ts` bei jedem `npm test`, dazu: `catalog`
+importiert nur `domain` (Regel 7), `compositions` importiert weder `server` noch `ui` (Regel 8).
+Regel 5 wird geprüft, sobald es einen Composition Root gibt.
+
+### Build-Ziele (ADR 0020)
+
+| Ziel | Befehl | Enthält | Wohin |
+|---|---|---|---|
+| `live` | `npm run build` | alles; `*.live.tsx/.live.ts` (Studio-Start, Health-Check, Lead-Demos) nur hier | Node-Server (lokal, später Vercel) |
+| `showcases` | `npm run export:showcases` | statischer Export der Beispielseiten, Impressum, Datenschutz nach `out/` | GitHub Pages über `publish-showcases.yml` |
 
 ### Verhältnis zur Monorepo-Zielstruktur
 
@@ -217,13 +230,13 @@ voraus. Die Umgebungsvariablen sind in `src/server/env.ts` bereits als *optional
 |---|---|---|---|---|---|
 | Resend | Reservierungs- und Abhol-Anfragen, Eingangsbestätigungen, Systemmails | `EmailSenderPort` (Typ vorhanden) | `RESEND_API_KEY`, `EMAIL_FROM` | 5 | Free-Tier vorhanden; Absenderdomain verifizieren. |
 | Externe Buchungssysteme (Resmio, OpenTable, Quandoo …), WhatsApp | Vorhandene Reservierungswege des Betriebs einbinden | zunächst nur Links im Content-Modell | – | 1 (Modell), 5 (Seite) | Keine Einbettung fremder Skripte ohne ADR (Datenschutz, Performance). |
-| GitHub Pages | Statische Demo-Seiten (Showcase; Lead-Demos siehe ADR 0016) | – (Export + Deploy-Workflow, Stufe 4) | – | 4 | Kostenlos nur aus öffentlichem Repository; Seiten immer öffentlich; nicht für Kundenseiten. |
+| GitHub Pages | Statische Beispielseiten (Lead-Demos nie, ADR 0016/0021) | – (Export + `publish-showcases.yml`) | Build: `STUDIO_BUILD_TARGET`, `SHOWCASE_BASE_PATH`; Impressum: `STUDIO_OPERATOR_NAME/ADDRESS/EMAIL` | 4 ✅ | Kostenlos nur aus öffentlichem Repository (eigenes Repo für den Export); Seiten immer öffentlich; nicht für Kundenseiten. |
 | Vercel | Hosting, Preview-URLs für Demos, Custom Domains; später automatisierte Deployments je Kunde | `DeploymentPort` (entsteht bei Bedarf) | `VERCEL_TOKEN` (erst mit Automatisierung) | 4 (Previews), 6 (live) | Hobby-Tarif laut Vercel nur für nicht-kommerzielle Nutzung → vor dem ersten Live-Kunden Pro. Die App bleibt auf jedem Node-Host lauffähig. |
 | Cloudflare | Domains, DNS, TLS | – (manuell, später ggf. Port) | – | 6 | Gering; Domain gehört idealerweise dem Kunden. |
 | Sentry | Fehlertracking (Formulare, API-Fehler) | `ErrorReporter` (entsteht mit Stufe 6) | (Stufe 6) | 6 | Free-Tier; EU, ohne Session-Replay, PII-Filter. |
 | Plausible oder Umami | Cookielose Website-Statistik je Kunde | – (Skript-Einbindung je Seite) | (Stufe 6) | 6 | Nur mit Zustimmung des Kunden; EU-Hosting. |
 | Supabase | Postgres, Auth, Storage (Bilder, Logos, Speisekarten-PDFs als Quelle) | Repositories je Fachbereich (entstehen mit Stufe 7) | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (nur Server) | 7 | Free-Tier (inaktive Projekte werden pausiert); Pro für Produktivbetrieb; EU-Region. Keine Migration vor Stufe 7. |
-| Google Places API (New) | Lead-Recherche | `PlacesSearchPort` + feste Field Masks (`places-fields.ts`) | `GOOGLE_PLACES_API_KEY` | 8 (bis dahin gastro-v3) | Lead-Suche ist Enterprise-SKU (wegen `websiteUri`); Budget-Alarm setzen; nur Place-IDs speichern (ADR 0013). |
+| Google Places API (New) | Lead-Demos (Place Details, live) und später Lead-Recherche | `PlaceDetailsPort` (Adapter `google-places.ts`), `PlacesSearchPort`; feste Field Masks (`places-fields.ts`) | `GOOGLE_PLACES_API_KEY`, `STUDIO_LEAD_DEMOS` (`off`/`local`) | 4 (Lead-Demos, nur lokal), 8 (Recherche) | Enterprise-SKU je Aufruf; Budget-Alarm setzen; nichts zwischenspeichern, nur Place-IDs speichern (ADR 0013, 0021). |
 | KI-Anbieter (Anthropic) | Textentwürfe, Audit-Zusammenfassungen, Briefing- und Direction-Vorschläge | `TextAssistantPort` (entsteht bei Bedarf) | `ANTHROPIC_API_KEY` | 3+ | Optional; Ergebnisse immer Status `vorschlag`. |
 | Stripe | Zahlungen der eigenen Bestellstrecke | `PaymentPort` (Stufe 10) | (Stufe 10) | 10 | Transaktionsgebühren; erst mit Phase 3. |
 | Web Push / Telegram | Benachrichtigung des Betriebs | `NotificationPort` (später) | (später) | 9–10 | Kostenlos; Referenz: v1/v3-Umsetzung. |
@@ -231,7 +244,8 @@ voraus. Die Umgebungsvariablen sind in `src/server/env.ts` bereits als *optional
 ## 7. Betrieb und Qualitätssicherung
 
 - **Checks:** `npm run check` (ESLint, Typprüfung, Vitest) und `npm run build` laufen lokal und in CI
-  (`.github/workflows/ci.yml`) bei jedem Push und Pull Request.
+  (`.github/workflows/ci.yml`) bei jedem Push und Pull Request; CI baut außerdem den statischen Export
+  samt `npm run check:export` und führt Playwright aus.
 - **Health-Check:** `GET /api/health` – `200` mit `status: "ok"` oder `503` mit `status: "degraded"`,
   nie gecacht, ohne Konfigurationswerte. Details: [`docs/decisions/0006-health-check.md`](docs/decisions/0006-health-check.md).
 - **Tests:** Vitest für `domain` und `server` (Ports durch Fakes ersetzt), Vertragstests für Adapter

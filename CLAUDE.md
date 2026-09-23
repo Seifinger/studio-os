@@ -45,7 +45,8 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
   durch Fakes ersetzt; Zeit und Zufall werden injiziert.
 - Tests werden nie übersprungen, deaktiviert, abgeschwächt oder gelöscht, um grün zu werden.
 - **Vor jedem Commit grün**: `npm run check` (Lint, Typprüfung, Unit-Tests) und `npm run build`.
-- Playwright (`npm run test:e2e`) ist vorbereitet; umfangreiche E2E-Suiten entstehen erst mit echten Abläufen.
+- Playwright (`npm run test:e2e`) prüft Beispielseiten mobil und am Desktop; mit vorinstalliertem
+  Chromium `PLAYWRIGHT_CHROMIUM_EXECUTABLE` setzen.
 
 ## 4. Abhängigkeiten
 
@@ -74,7 +75,10 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
   Quelle; alle anderen Places-Inhalte nie speichern, sondern live abrufen und mit Google-Logo zeigen.
   Nur die Field Masks aus `places-fields.ts`; keine Rezensionen, keine Google-Fotos (ADR 0013).
 - Konzept-Demos für echte Betriebe: nicht öffentlich, gekennzeichnet, Platzhalter statt erfundener
-  Inhalte (ADR 0014).
+  Inhalte (ADR 0014). Lead-Demos entstehen live aus Place Details und laufen nur lokal
+  (`STUDIO_LEAD_DEMOS=local` + localhost, ADR 0021) – nie im statischen Export.
+- Beispielbetriebe nur über `defineShowcase`: Rufnummern 089 99998 1xx, Postleitzahlen 00xxx,
+  keine Gästestimmen, keine Fotos ohne eigene Rechte (ADR 0020).
 - Keine echten Gäste- oder Kundendaten in Tests, Fixtures oder Screenshots.
 
 ## 6. Code-Konventionen
@@ -96,7 +100,9 @@ npm run dev           # Entwicklungsserver
 npm run check         # ESLint + Typprüfung + Vitest
 npm run build         # Produktions-Build
 npm run start         # Produktionsserver (nach build)
-npm run test:e2e      # Playwright-Smoke-Test (nach build)
+npm run test:e2e      # Playwright: Smoke-Test und Beispielseiten (nach build)
+npm run export:showcases  # statischer Export der Beispielseiten nach out/
+npm run check:export      # Veröffentlichungsprüfung gegen out/ (braucht STUDIO_OPERATOR_*)
 ```
 
 ## 8. Definition of Done

@@ -168,6 +168,9 @@ Dazu:
   Material, mit Standbild-Fallback und Pause-Knopf.
 - Bewegung darf das Layout nicht verschieben (CLS ≤ 0,1).
 - Im Studio bewegt sich nur, was einen Zustand anzeigt (Laden, Speichern, Fehler).
+- Umsetzung in der Restaurant-Komposition (ADR 0020): `quiet` ohne Bewegung; `editorial` hebt den Kopf
+  des ersten Signature-Abschnitts beim Hineinscrollen an (Scroll-Timeline, Deckkraft nie unter 0,4);
+  `expressive` setzt den Namen einmal beim Laden (nur Verschiebung, nie unsichtbar).
 
 ## 8. Mobile, Barrierefreiheit, Performance, SEO
 
@@ -257,3 +260,22 @@ Leitplanken:
 - `gallery: "none"` ist eine gültige Wahl – lieber keine Galerie als Stock.
 - Eine Direction ohne belegte Referenzen wird nicht verwendet (Abschnitt 1).
 
+## 11. Restaurant-Komposition (Stufe 4)
+
+Die erste Komposition (`src/compositions/restaurant/`, ADR 0020) setzt die Directions so um:
+
+- **Hero ohne Foto:** Der Name ist das Bild. *split* stellt neben den Namen eine Tafel mit dem, was
+  heute gilt (Tageskarte, sonst Öffnungszeiten); *immersive* setzt den Namen als Plakat auf zwei
+  ausgewogene Zeilen, gedeckelt über Breite **und** Fensterhöhe – Einleitung und Handlung bleiben auf
+  dem ersten Bildschirm.
+- **Dramaturgie statt Vorlage:** Reihenfolge, Gewicht und Überschriften kommen aus der Creative
+  Direction; kein Haus hat dieselbe Abschnittsfolge wie ein anderes (Test).
+- **Speisekarte** in drei Satzarten: Punktlinie bis zum Preis (typografisch), Zettel mit Preis
+  (Karten), Gänge mit großer Ziffer in der Signalfarbe (Kochbuch). Preise in Tabellenziffern,
+  Allergene klein, aber vollständig.
+- **Bildplätze** sind schraffierte Rahmen mit Motiv und Grund („Foto folgt · Noch kein Foto“) – eine
+  Foto-Aufgabe für den Betrieb, nie ein Stockfoto.
+- **Mobile:** Menü als `<details>` (ohne JavaScript bedienbar), unten eine klebende Leiste mit der
+  Hauptaktion und Anruf/Route; Tippziele ≥ 44 px (E2E).
+- **Ehrliche Demos:** Pflichthinweis oben und im Fuß, gesperrte Formulare mit Begründung, in
+  Beispielen keine wählbaren Nummern.

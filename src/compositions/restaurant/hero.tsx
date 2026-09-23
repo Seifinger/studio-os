@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
 
 import type { ResolvedAction } from "@/domain/content/actions";
-import { formatOpeningHours } from "@/domain/content/opening-hours";
+import { openingHoursRows } from "@/domain/content/opening-hours";
 import { cuisineLabel } from "@/domain/gastronomy/cuisines";
 
 import { isVisible, show, type SiteModel } from "./model";
@@ -34,15 +34,20 @@ export function Hero({ model, actions }: { model: SiteModel; actions: readonly A
   const hours = show(profile.openingHours, context);
 
   const title = isVisible(name) ? name.value : "Ihr Restaurant";
-  const kicker = [isVisible(cuisine) ? cuisineLabel(cuisine.value) : null, isVisible(locality) ? locality.value : null]
-    .filter(Boolean)
-    .join(" · ");
+  const cuisineText = isVisible(cuisine) ? cuisineLabel(cuisine.value) : null;
+  const localityText = isVisible(locality) ? locality.value : null;
   const layout = direction.layout.hero === "split-editorial" ? "split" : "immersive";
 
   return (
     <section className={styles.hero} data-section="hero" data-layout={layout} aria-labelledby="titel">
       <div className={styles.main}>
-        {kicker ? <p className={styles.kicker}>{kicker}</p> : null}
+        {cuisineText || localityText ? (
+          <p className={styles.kicker}>
+            {cuisineText ? <Draft draft={cuisine.kind === "draft"}>{cuisineText}</Draft> : null}
+            {cuisineText && localityText ? " · " : null}
+            {localityText}
+          </p>
+        ) : null}
         <h1 id="titel" className={styles.title} style={{ "--name-chars": longestWord(title), "--name-line": balancedLine(title) } as CSSProperties} data-settle>
           {title}
         </h1>
@@ -86,8 +91,10 @@ export function Hero({ model, actions }: { model: SiteModel; actions: readonly A
             <>
               <p className={styles.boardLabel}>Geöffnet</p>
               <ul className={styles.boardList}>
-                {formatOpeningHours(hours.value).map((line) => (
-                  <li key={line}>{line}</li>
+                {openingHoursRows(hours.value).map((row) => (
+                  <li key={row.days}>
+                    <BoardEntry text={`${row.days}: ${row.times}`} draft={hours.kind === "draft"} />
+                  </li>
                 ))}
               </ul>
             </>

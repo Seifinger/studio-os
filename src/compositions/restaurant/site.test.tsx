@@ -100,6 +100,13 @@ describe("Stylesheets der Komposition", () => {
     expect(css.match(/#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(/gi) ?? []).toEqual([]);
   });
 
+  it("hat höchstens einen Bewegungsmoment je Intensität (DESIGN.md §7)", () => {
+    const css = readFileSync(path.join(here, "site.module.css"), "utf8");
+    expect(css.match(/data-motion="editorial"\][^{]*\{\s*animation:/g) ?? []).toHaveLength(1);
+    expect(css.match(/data-motion="expressive"\][^{]*\{\s*animation:/g) ?? []).toHaveLength(1);
+    expect(css).not.toMatch(/data-motion="quiet"/);
+  });
+
   it("schaltet jede Bewegung bei reduzierter Bewegung ab", () => {
     const css = readFileSync(path.join(here, "site.module.css"), "utf8");
     const outsideMedia = css.split("@media (prefers-reduced-motion: no-preference)")[0] ?? "";

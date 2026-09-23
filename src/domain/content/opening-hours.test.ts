@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatOpeningHours, type OpeningHours, openingHoursSchema } from "./opening-hours";
+import { formatOpeningHours, type OpeningHours, openingHoursRows, openingHoursSchema } from "./opening-hours";
 
 const closed: [] = [];
 const lunchAndDinner = [
@@ -64,5 +64,18 @@ describe("formatOpeningHours", () => {
   it("zeigt Zeiten über Mitternacht wie angegeben", () => {
     const hours = openingHoursSchema.parse({ week: week({ sa: [{ from: "18:00", to: "01:00" }] }) });
     expect(formatOpeningHours(hours)).toEqual(["Mo–Fr Ruhetag", "Sa 18:00–01:00", "So Ruhetag"]);
+  });
+});
+
+describe("openingHoursRows", () => {
+  it("trennt Tage und Zeiten auch bei zwei zusammengefassten Tagen sauber (Regression: „Mo,“ | „Di Ruhetag“)", () => {
+    const hours = openingHoursSchema.parse({
+      week: { mo: [], di: [], mi: [{ from: "18:00", to: "23:00" }], do: [{ from: "18:00", to: "23:00" }], fr: [], sa: [], so: [] },
+    });
+    expect(openingHoursRows(hours)).toEqual([
+      { days: "Mo, Di", times: "Ruhetag" },
+      { days: "Mi, Do", times: "18:00–23:00" },
+      { days: "Fr–So", times: "Ruhetag" },
+    ]);
   });
 });

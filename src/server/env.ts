@@ -62,6 +62,9 @@ export const serverEnvSchema = z
     ANTHROPIC_API_KEY: optionalSecret,
     // Anbieterkennzeichnung (§ 5 DDG) der öffentlichen Beispielseiten – kein Geheimnis, aber
     // personenbezogen; deshalb nicht im Repository, sondern beim Veröffentlichen gesetzt (ADR 0020).
+    // Lead-Demos mit Live-Daten aus Google Places: nur "local" schaltet sie ein, und dann nur für
+    // Aufrufe über localhost (ADR 0016 Option B, ADR 0021).
+    STUDIO_LEAD_DEMOS: z.preprocess(emptyToUndefined, z.enum(["off", "local"], { error: 'muss "off" oder "local" sein' }).default("off")),
     STUDIO_OPERATOR_NAME: optionalText,
     STUDIO_OPERATOR_ADDRESS: optionalText,
     STUDIO_OPERATOR_EMAIL: optionalEmail,
