@@ -511,13 +511,16 @@
 }
 
 /* Erzählung: Kapitel und Bildbelege im Wechsel; am großen Bildschirm versetzt. */
+/* minmax(0, …): Bildrahmen mit aspect-ratio dürfen die Spalte nicht über ihre Inhaltshöhe aufweiten. */
 .storyBody {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ne-space-xl);
 }
 
 .storyChapter {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ne-space-l);
 }
 
@@ -535,11 +538,14 @@
 /* Bildplatz: das Briefing als Rahmen – erkennbar leer, nie mit einem Foto zu verwechseln. */
 .frame {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ne-space-xs);
+  min-width: 0;
   margin: 0;
 }
 
 .frameWindow {
+  min-width: 0;
   overflow: hidden;
   aspect-ratio: var(--ratio-m);
   border: 1px solid color-mix(in srgb, currentcolor 35%, transparent);
@@ -596,6 +602,7 @@
 /* Handwerk: Hausgerichte groß wie auf einer gemalten Tafel, Handgriffe als ruhige Liste. */
 .craftBody {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--ne-space-xl);
 }
 

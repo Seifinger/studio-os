@@ -280,8 +280,13 @@
 }
 
 /* Bildplätze: ohne freigegebenes Foto bleibt eine sichtbare Foto-Aufgabe (DESIGN.md §5). */
+/*
+ * Spalten ausdrücklich mit minmax(0, …): Bildrahmen mit aspect-ratio können ihre Inhaltshöhe sonst
+ * über das Seitenverhältnis in eine Mindestbreite übersetzen und die Spalte aufsprengen.
+ */
 .gallery {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1rem, 3vw, 1.75rem);
 }
 
@@ -322,7 +327,9 @@
 
 .slot {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.6rem;
+  min-width: 0;
   margin: 0;
   scroll-snap-align: start;
 }
@@ -330,6 +337,7 @@
 .slot img,
 .slotFrame {
   width: 100%;
+  min-width: 0;
   aspect-ratio: var(--ratio-mobile);
   border-radius: var(--radius);
   object-fit: cover;
@@ -371,6 +379,7 @@
 
 .slotMotif {
   max-width: 28ch;
+  overflow-wrap: break-word;
   font-family: var(--f-lead);
   font-weight: var(--w-lead);
   font-size: clamp(1.05rem, 2vw, 1.3rem);

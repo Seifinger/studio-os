@@ -21,8 +21,15 @@ for (const slug of SLUGS) {
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
     await expect(page.locator('a[href^="tel:"], a[href*="wa.me"], a[href*="google.com/maps"]')).toHaveCount(0);
 
-    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
-    expect(overflow).toBeLessThanOrEqual(0);
+    const { overflow, offenders } = await page.evaluate(() => {
+      const width = document.documentElement.clientWidth;
+      const offenders = [...document.querySelectorAll("body *")]
+        .filter((element) => element.getBoundingClientRect().right > width + 0.5)
+        .slice(0, 5)
+        .map((element) => `${element.tagName.toLowerCase()}.${String(element.className).split(" ")[0]} (${Math.round(element.getBoundingClientRect().right)} px)`);
+      return { overflow: document.documentElement.scrollWidth - width, offenders };
+    });
+    expect(overflow, `Überstehend: ${offenders.join(", ")}`).toBeLessThanOrEqual(0);
   });
 }
 
