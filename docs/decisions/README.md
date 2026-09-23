@@ -17,3 +17,6 @@ neues ADR ersetzt (Status „ersetzt durch 00xx“).
 | [0009](0009-abhaengigkeiten.md) | Abhängigkeiten der Foundation | angenommen |
 | [0010](0010-sicherheits-header.md) | Sicherheits-Header, CSP später | angenommen |
 | [0011](0011-widersprueche-der-referenzen.md) | Widersprüchliche Designregeln der Referenzen auflösen | angenommen |
+| [0012](0012-produktplan-uebernommen.md) | Produktplan übernommen: Stufen neu geordnet | angenommen |
+| [0013](0013-google-places-speicherung-und-kosten.md) | Google Places: nur Place-IDs speichern, Felder bewusst wählen | angenommen |
+| [0014](0014-demos-fuer-echte-betriebe.md) | Konzept-Demos für echte Betriebe | angenommen |

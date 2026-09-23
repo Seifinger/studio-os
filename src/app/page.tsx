@@ -17,6 +17,7 @@ function StatusRow({ term, children }: StatusRowProps) {
 }
 
 const DOCUMENTS = [
+  { file: "ROADMAP.md", purpose: "Produktplan in zehn Stufen – vom Fachkern bis zur eigenen Bestellstrecke" },
   { file: "ARCHITECTURE.md", purpose: "Modulgrenzen, Datenfluss, Sicherheit, spätere Integrationen" },
   { file: "DESIGN.md", purpose: "Anti-Slop-Regeln, funktionale UI und kreative Kompositionen" },
   { file: "MIGRATION.md", purpose: "Was aus den Referenzprojekten übernommen wird – und in welcher Reihenfolge" },
@@ -49,10 +50,10 @@ export default function HomePage() {
               /api/health
             </a>
           </StatusRow>
-          <StatusRow term="Fachlogik">Noch keine. Reihenfolge der Übernahme in MIGRATION.md</StatusRow>
+          <StatusRow term="Fachlogik">Noch keine. Nächste Stufe laut ROADMAP.md: Fachkern und Content-Modell</StatusRow>
           <StatusRow term="Integrationen">
-            Google Places, Supabase, Resend, Vercel und KI sind als Schnittstellen beschrieben und
-            abgeschaltet
+            Google Places und E-Mail als Schnittstellen vorbereitet, alle abgeschaltet. Weitere Dienste
+            sind in ARCHITECTURE.md geplant
           </StatusRow>
         </dl>
       </section>

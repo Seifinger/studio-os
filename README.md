@@ -3,14 +3,17 @@
 Technische Grundlage eines KI-unterstützten Website-Studios für lokale Betriebe. Erster Markt:
 Restaurants; später Hotels, Handwerk, Beauty, Fitness und lokale Dienstleister.
 
-**Stand: Foundation.** Es gibt eine interne Startseite, einen Health-Check und die verbindlichen
-Grundlagen. Fachfunktionen (Leads, Briefings, Kundenseiten, Reservierung) folgen schrittweise nach
-[`MIGRATION.md`](MIGRATION.md).
+**Stand: Foundation (Stufe 0 von 10).** Es gibt eine interne Startseite, einen Health-Check und die
+verbindlichen Grundlagen. Fachfunktionen folgen schrittweise nach [`ROADMAP.md`](ROADMAP.md); bis zur
+Lead-Recherche in Stufe 8 bleibt `gastro-v3` das Vertriebswerkzeug.
+
+> Ein gemeinsames System im Hintergrund, aber für den Kunden immer eine eigenständige Website.
 
 ## Dokumente
 
 | Datei | Inhalt |
 |---|---|
+| [`ROADMAP.md`](ROADMAP.md) | Produktplan in Stufen: Stack, Reihenfolge, Phasen für Reservierung/Bestellung, Kostenrahmen |
 | [`CLAUDE.md`](CLAUDE.md) | Verbindliche Entwicklungsregeln (Tests, Abhängigkeiten, Secrets, Referenzprojekte) |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Zielarchitektur, Modulgrenzen, Datenfluss, Security, Integrationen |
 | [`DESIGN.md`](DESIGN.md) | Anti-AI-Slop-Regeln, funktionale UI vs. kreative Komposition, Typografie, Bild, Layout, Motion, Mobile |

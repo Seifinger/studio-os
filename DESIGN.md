@@ -8,12 +8,16 @@ beschlossen (mit ADR in `docs/decisions/`) und erst dann im Code umgesetzt.
 Eine Kundenseite beginnt nie mit Code und nie mit einer Vorlage. Die Reihenfolge ist fest:
 
 1. **Briefing** – Was ist dieser Betrieb, belegt durch Angaben mit Status (ARCHITECTURE.md, 4.2)?
-2. **Creative Direction** – Leitidee in einem Satz, Wirkung auf Gäste, visuelle Metapher, Dramaturgie
+2. **Design Direction** – passende Stilrichtung als Startpunkt wählen oder neu belegen (Abschnitt 10).
+3. **Creative Direction** – Leitidee in einem Satz, Wirkung auf Gäste, visuelle Metapher, Dramaturgie
    mit Begründung je Abschnitt, höchstens zwei Signature-Details *mit Beleg im Briefing*, bewusster Verzicht.
-3. **Designsystem und Bildplan** – Tokens mit Aufgabe, Schriftpaar, Bildplätze mit Motiv, Zuschnitt,
+4. **Designsystem und Bildplan** – Tokens mit Aufgabe, Schriftpaar, Bildplätze mit Motiv, Zuschnitt,
    Herkunft und Rechten.
-4. **Komposition** – erst jetzt Code.
-5. **Review** – automatische Untergrenzen, dann menschliches Urteil, dann Tauschprobe (Regel P1).
+5. **Komposition** – erst jetzt Code.
+6. **Review** – automatische Untergrenzen, dann menschliches Urteil, dann Tauschprobe (Regel P1).
+
+Für Konzept-Demos vor der Beauftragung genügen Schritt 2 und eine knappe Creative Direction; statt
+Fakten stehen Platzhalter (ADR 0014).
 
 Referenzen (reale Websites guter Betriebe, kuratierte Stilsammlungen) belegen Entscheidungen; sie
 werden analysiert, nie kopiert. Eine Referenz ohne Begründung, *was* übernommen wird und *was bewusst
@@ -34,6 +38,7 @@ gebaut und getrennt geprüft.
 | Varianz | Gering – Abweichung ist ein Fehler | Hoch – aber jede Abweichung braucht einen Grund |
 | Komponenten | Generisch benannt und wiederverwendbar (`Button`, `Field`, `DataTable`) | Nach Aufgabe im Haus benannt, durch die Creative Direction parametrisiert; nie 1:1 auf ein zweites Haus übertragen |
 | Prüfung | Unit-Tests, Barrierefreiheit, Tastaturbedienung | Fakten-Gate, Copy-Regeln, Screenshot-Review mit Zuständen, Tauschprobe |
+| Grundlage | Radix-Primitives (headless) bzw. shadcn/ui als übernommener Quellcode, **umgestellt auf die Studio-Tokens** | Design Direction + Creative Direction (Abschnitt 10); Radix nur headless für Funktionsbausteine |
 
 **Funktionsbausteine auf Kundenseiten** (Reservierung, Bestellung, Öffnungszeiten, Kontakt) sind der
 Sonderfall: Ihre *Logik* (Validierung, Zustände, Fehlermeldungen) ist geteilt und liegt in `domain`;
@@ -41,6 +46,17 @@ ihr *Aussehen* gehört der Komposition. Ein Reservierungsformular darf nie wie e
 Studio aussehen (Befund aus dem v2-Audit) – und das Studio nie wie eine Kundenseite.
 
 `ui` und `compositions` importieren sich nicht gegenseitig (ARCHITECTURE.md, Abschnitt 3).
+
+**Radix und shadcn/ui** sind für Funktionales erlaubt: Formularfelder, Datums- und Zeitauswahl,
+Dialog, Dropdown, Toast, Datei-Upload, Tabellen, Login, Cookie-Hinweis. Regeln:
+- shadcn/ui ist Quellcode zum Übernehmen, keine Optik. Jede übernommene Komponente wird auf die
+  Tokens umgestellt; der Standard-Look (Radien, Schatten, Grautöne, Fokusfarbe) wird nie ausgeliefert.
+- Auf Kundenseiten nur Radix-Primitives ohne mitgelieferte Gestaltung; das Aussehen bestimmt die Komposition.
+- Hero, Titeltypografie, Bildzuschnitt, Navigationsform, Speisekarten-Darstellung, Farbwelt,
+  Seitenrhythmus, Bewegung, Einbindung von Reservierung/Bestellung und Dramaturgie kommen **nie** aus
+  einer Komponentenbibliothek.
+- Die Abhängigkeit wird mit dem ersten Formular (ROADMAP Stufe 5) bzw. dem Dashboard (Stufe 7) per
+  ADR aufgenommen.
 
 ## 3. Anti-AI-Slop-Regeln
 
@@ -67,7 +83,7 @@ Grenzfälle.
 
 | # | Regel | Grund |
 |---|---|---|
-| T1 | **Keine erfundenen Betriebsfakten**: Öffnungszeiten, Preise, Gerichte, Geschichte, Auszeichnungen, Gästestimmen, Bewertungen, Teamnamen erscheinen nur mit Status `bestaetigt`/`uebernommen`. | Produktprinzip 5; rechtlich (UWG) und menschlich. |
+| T1 | **Keine erfundenen Betriebsfakten**: Öffnungszeiten, Preise, Gerichte, Geschichte, Auszeichnungen, Gästestimmen, Bewertungen, Teamnamen erscheinen nur mit Status `bestaetigt`/`uebernommen`. In Konzept-Demos stehen fehlende Inhalte als erkennbare Platzhalter („Hier steht Ihre Mittagskarte“), nie als Katalog-Gerichte oder -Preise (ADR 0014). | Produktprinzip 5; rechtlich (UWG) und menschlich. |
 | T2 | **Keine KI-Floskeln**: „Willkommen bei …“, „Tauchen Sie ein“, „Lassen Sie sich verwöhnen“, „kulinarische Reise“, „Geschmackserlebnis“, „einzigartig“, „unvergesslich“, „authentisch“, „mit Liebe zubereitet“, „nicht nur …, sondern auch …“, Dreierketten allgemeiner Adjektive. | Behauptete Gefühle statt Dinge. Vollständige Liste mit Begründung: Referenz `v2/COPY-PRINZIPIEN.md`, Übernahme als Regeldaten in Stufe 2. |
 | T3 | **Ein guter Satz nennt eine Sache und einen Beleg** – ein Gericht, eine Uhrzeit, eine Herkunft, einen Handgriff, eine Zahl. | Konkretheit ist das Gegenteil von Slop. |
 | T4 | **Überschriften sagen etwas**. Navigation bleibt schlicht und findbar („Speisekarte“, „Reservieren“), Abschnittsüberschriften sind konkret, wenn das Briefing es trägt. | Wiederkehrende Standard-H2 („Was Gäste sagen“) auf 24 von 36 v2-Seiten. |
@@ -162,7 +178,9 @@ Dazu:
 - **Performance-Budget Kundenseiten** (75. Perzentil, mobil): LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1.
   Client-JavaScript nur für Interaktion; Server Components sind Standard.
 - **Mobile Pflichten**: Telefon als `tel:`-Link, Adresse mit Routenlink, Öffnungszeiten als Text,
-  Speisekarte als HTML statt PDF.
+  Speisekarte als HTML statt PDF (ein PDF des Betriebs ist Quelle, nicht Ausgabe). WhatsApp nur als
+  Link und nur, wenn der Betrieb den Kanal aktiv betreut; vorhandene Buchungssysteme (Resmio,
+  OpenTable, Quandoo …) als Link statt eingebettetem Fremdskript.
 - **SEO**: semantisches HTML, Metadaten je Seite, `Restaurant`/`LocalBusiness`-JSON-LD nur aus
   bestätigten Angaben, Canonical-URL, Sitemap. Entwürfe und Vorschauen tragen `noindex`.
 
@@ -187,3 +205,55 @@ Kontraste prüft `src/app/studio-tokens.test.ts` bei jedem `npm test`.
 Warmes Papier statt reinem Weiß, Tinte statt Schwarz, ein gedecktes Grün als einziger Handlungsakzent –
 bewusst weit weg von Standard-Blau und Lila. Das Studio soll wie ein Arbeitsplatz wirken, nicht wie ein
 Produktlaunch.
+
+## 10. Design Directions und Creative Direction
+
+Gestaltung entsteht auf zwei Ebenen. Beide sind nötig; keine ersetzt die andere.
+
+| | **Design Direction** | **Creative Direction** |
+|---|---|---|
+| Was | Wiederverwendbare Stilrichtung: Stimmung, Schriftpaar, Palette mit Rollen, Layout-Vokabular (Hero, Speisekarte, Galerie), Bewegungsintensität | Entscheidung für genau ein Haus: Leitidee, Metapher, Dramaturgie mit „warum“, Signature-Details mit Beleg, bewusster Verzicht |
+| Beispiel | „warmes italienisches Quartiersrestaurant“ | „Die Seite ist die Karte auf dem Tisch – mit eingelegter Tageskarte“ |
+| Quelle | Studio, belegt durch mindestens eine reale Restaurant-Website und eine Design-Referenz (was übernommen, was bewusst nicht) | Briefing des Betriebs |
+| Wiederverwendbar | ja, als Startpunkt für mehrere Häuser | nie (Regel P3) |
+| Ort im Code | `src/domain/design` (ROADMAP Stufe 3) | Daten je Website-Projekt + `src/compositions` |
+
+Ein bayerisches Wirtshaus, ein Sushi-Restaurant und ein urbanes Café nutzen dieselbe technische Basis,
+aber verschiedene Directions. Zwei Häuser mit derselben Design Direction unterscheiden sich über ihre
+Creative Direction – die Tauschprobe (P1) muss trotzdem bestehen.
+
+**Entwurf des Schemas** (wird in Stufe 3 als Zod-Schema festgelegt; Ausgangspunkt ist der Typ aus dem
+Produktplan, ergänzt um die Regeln dieses Dokuments):
+
+```ts
+type DesignDirection = {
+  id: string;
+  mood: string; // ein Satz, keine Adjektivkette (T2)
+  references: { url: string; kind: "restaurant" | "design"; adopted: string[]; rejected: string[] }[];
+  typography: {
+    displayFont: FontId; // aus dem Schriftregister: selbst gehostet, Lizenz belegt, nicht auf der S1-Liste
+    bodyFont: FontId;
+    scale: "editorial" | "compact" | "monumental";
+  };
+  palette: {
+    // jede Rolle mit Aufgabe; Kontraste werden geprüft (Abschnitt 8)
+    background: string; surface: string; text: string; textMuted: string;
+    primary: string; onPrimary: string; accent: string; lineStrong: string;
+  };
+  layout: {
+    hero: "cinematic" | "split-editorial" | "immersive-type" | "gallery";
+    menu: "typographic" | "card-minimal" | "course-led";
+    gallery: "full-bleed" | "masonry" | "horizontal-scroll" | "none";
+  };
+  motion: { intensity: "quiet" | "expressive" | "editorial" }; // Abschnitt 7 gilt immer
+};
+```
+
+Leitplanken:
+- Die Layout-Werte sind **Vokabular, keine Vorlagen**. Welcher Wert gilt, begründet die Creative
+  Direction; eine Komposition darf eigene Abschnitte bauen, die in keinem Wert vorkommen.
+- `hero: "cinematic"` nur mit eigenem Foto- oder Videomaterial (S10, ADR 0014); ohne Material trägt
+  die Typografie (`immersive-type`).
+- `gallery: "none"` ist eine gültige Wahl – lieber keine Galerie als Stock.
+- Eine Direction ohne belegte Referenzen wird nicht verwendet (Abschnitt 1).
+

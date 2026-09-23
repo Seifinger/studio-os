@@ -7,8 +7,8 @@ Aufgabe und diesen Regeln: nachfragen, nicht stillschweigend abweichen.
 
 studio-os ist die technische Grundlage eines Website-Studios für lokale Betriebe, erster Markt
 Restaurants. Nach außen individuelle Websites in Designstudio-Qualität, nach innen getestete,
-wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ARCHITECTURE.md`, `DESIGN.md`,
-`MIGRATION.md`, `docs/decisions/`.
+wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARCHITECTURE.md`,
+`DESIGN.md`, `MIGRATION.md`, `docs/decisions/`.
 
 ## 1. Referenzprojekte sind tabu
 
@@ -23,13 +23,16 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ARCHITECTURE.md`,
 ## 2. Arbeitsweise
 
 - **Klein und prüfbar**: eine Aufgabe, ein klarer Umfang. Nur bauen, was die Aufgabe verlangt; die
-  Reihenfolge in `MIGRATION.md`, Abschnitt 6 einhalten.
+  Stufen in `ROADMAP.md` einhalten. Jede Stufe beginnt erst nach Freigabe.
 - **Design vor Code**: Sichtbare Arbeit an Kundenseiten beginnt mit Briefing, Creative Direction und
   Bildplan (`DESIGN.md`, Abschnitt 1) – nie mit einer Vorlage.
 - **Entscheidungen festhalten**: Jede nicht-triviale Entscheidung (Architektur, Abhängigkeit,
   Datenmodell, Sicherheitsregel, Designregel) bekommt ein ADR in `docs/decisions/` (Vorlage:
   `docs/decisions/0000-vorlage.md`). Dokumente, die dadurch veralten, im selben Commit aktualisieren.
-- **Keine Datenbankmigration** vor dem ausdrücklich geplanten Dashboard-Schritt (Stufe 6).
+- **Keine Datenbankmigration** vor dem ausdrücklich geplanten Dashboard-Schritt (ROADMAP Stufe 7).
+- **Kein eigenes Buchungs-, Bestell- oder Zahlungssystem** vor ROADMAP Stufe 10; bis dahin
+  Anfragen per E-Mail und Links zu vorhandenen Systemen.
+- **gastro-v3 bleibt Vertriebsprototyp** bis Stufe 8 und wird aus studio-os heraus nicht verändert.
 
 ## 3. Testpflicht
 
@@ -65,8 +68,11 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ARCHITECTURE.md`,
 - **Keine erfundenen Betriebsfakten** in Demos oder Kundenseiten (Öffnungszeiten, Preise, Gerichte,
   Geschichte, Stimmen, Bewertungen). Fiktive Beispielbetriebe sind sichtbar als „Beispiel – frei
   erfunden“ gekennzeichnet und `noindex`.
-- Google-Places-Daten: dauerhaft nur Place-ID + eigene Analyse; alles andere mit Ablaufdatum
-  (`ARCHITECTURE.md`, Abschnitt 5). Keine Rezensionstexte, keine Google-Fotos.
+- Google-Places-Daten: dauerhaft nur Place-ID + eigene Analyse + unabhängig erhobene Angaben mit
+  Quelle; alle anderen Places-Inhalte nie speichern, sondern live abrufen und mit Google-Logo zeigen.
+  Nur die Field Masks aus `places-fields.ts`; keine Rezensionen, keine Google-Fotos (ADR 0013).
+- Konzept-Demos für echte Betriebe: nicht öffentlich, gekennzeichnet, Platzhalter statt erfundener
+  Inhalte (ADR 0014).
 - Keine echten Gäste- oder Kundendaten in Tests, Fixtures oder Screenshots.
 
 ## 6. Code-Konventionen

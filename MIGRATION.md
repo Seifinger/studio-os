@@ -53,7 +53,9 @@ Stand: 23.09.2026 · Grundlage: Lesende Analyse, keine Änderung an den Referenz
   je Datei, SSE, Web Push, Telegram.
 - `dashboard/`: Agentur-Dashboard (Bearer-Token, nur 127.0.0.1) + Prospect-Workflow mit Google Places.
 - `scripts/migrate-from-v1.js`: liest v1-Piloten lesend.
-- CI auf Ubuntu **und** Windows.
+- CI auf Ubuntu **und** Windows – laut GitHub Actions grün auf `main` (Lauf #7, `ddcad23`); der im
+  Produktplan genannte Suchbutton-Fehler ist mit PR #2 behoben (`DECISIONS.md`, „Prospect workflow repair“).
+- **Rolle laut Produktplan:** bleibt Vertriebs- und Recherche-Prototyp bis ROADMAP Stufe 8.
 
 ## 2. Befunde: doppelt, widersprüchlich, instabil
 
@@ -70,7 +72,7 @@ einheitlich löst.
 | B6 | **Designregeln widersprechen sich**: v2 verbietet Inter, DM Sans, `system-ui`, Glasmorphismus (`backdrop-filter`); v1 nutzt Inter als Textschrift; v3 nutzt DM Sans und „Liquid Glass“ im Video-Hero | `v2/build/schriften.js`, `v2/build/antiSlopLint.js`, `gastro-v3/src/tokens/typography.json`, `gastro-v3/src/blueprints/hero-video` | Einmal in `DESIGN.md` entschieden (Abschnitt 3). |
 | B7 | **Schriften von Google-Servern**: v3 bindet `fonts.googleapis.com` ein; v1/v2 hosten bewusst lokal (DSGVO, offline) | `gastro-v3/src/renderer/fonts.js` | Kundenseiten hosten Schriften selbst (DESIGN.md). |
 | B8 | **Sicherheitslücken in v1**: `/intern/`-Routen des Wirt-Servers ohne Token (dokumentiert als E7.10), Dashboard-Token nur optional (Warnung statt Abbruch) | `src/wirtServer.js`, `src/dashboardServer.js` | Auth ist Pflicht, kein „läuft auch ohne Token“. v3-Muster (scrypt, HMAC, CSRF, konstante Vergleichszeit) sind die Messlatte. |
-| B9 | **Google-Places-Daten dauerhaft gespeichert**: v1 schreibt Name, Adresse, Telefon, Website, Bewertung in CSV unter `data/output/`; v3 speichert dieselben Felder dauerhaft in `data/runtime/prospects.json` | `src/csvExport.js`, `dashboard/prospect-server.js` | Widerspricht Produktprinzip 8. Dauerhaft nur `place_id` + eigene Analyse; übrige Places-Felder nur mit Ablaufdatum (ARCHITECTURE.md, Abschnitt 5). |
+| B9 | **Google-Places-Daten dauerhaft gespeichert**: v1 schreibt Name, Adresse, Telefon, Website, Bewertung in CSV unter `data/output/`; v3 speichert dieselben Felder dauerhaft in `data/runtime/prospects.json` | `src/csvExport.js`, `dashboard/prospect-server.js` | Widerspricht Produktprinzip 8 und der Google-Policy (nur Place-IDs dürfen gespeichert werden). Dauerhaft nur `place_id` + eigene Analyse + unabhängig erhobene Angaben; Places-Inhalte live abrufen (ADR 0013). |
 | B10 | **Fremdes Video fest im Code**: v3 verdrahtet eine CloudFront-URL als Demo-Video (`PROSPECT_DEMO_VIDEO_URL`), Rechte unklar | `gastro-v3/src/blueprints/_shared/util.js` | Nicht übernehmen. Medien nur mit dokumentierten Rechten. |
 | B11 | **Stockfotos als Hausfotos**: Unsplash-Hotlinks; falsche Gerichte, ein Teamfoto auf allen 36 Seiten (eigener v2-Audit) | `src/imageLibrary.js`, `v2/medien/stockKatalog.json` | Stock nie für Haus/Team/Raum; Bildplan mit Eignungsprüfung (DESIGN.md). |
 | B12 | **Messwert als Qualitätsbeleg**: Design-Judge 36/36 mit 10,0, obwohl die Seiten austauschbar waren | `v2/judge/designJudge.js`, `v2/ART-DIRECTION-AUDIT.md` | Automatische Prüfungen sichern nur Untergrenzen. Qualitätsurteil bleibt Review + Tauschprobe. |
@@ -90,9 +92,9 @@ Spezifikation dienen.
 |---|---|---|---|---|
 | K1 | **Provenienzmodell** für Betriebsfakten: Status `bestaetigt · uebernommen · vorschlag · unbekannt`, Quelle, Zeitstempel. Regeln: nur `bestaetigt`/`uebernommen` gelten als Tatsache; `vorschlag` nur mit sichtbarer Entwurfsmarke; `unbekannt` nie; ein leerer Wert kann nicht bestätigt sein | `v2/briefing/briefing.js` (`istTatsache`, `istZeigbar`), `gastro-v3/src/briefing/validator.js`, `gastro-v3/src/blueprints/_shared/util.js` (`confirmed()`) | `src/domain/provenance` | Kern von Produktprinzip 5. Beide Referenzen haben es unabhängig erfunden – das ist der stärkste Beleg, dass es gebraucht wird. |
 | K2 | **Briefing-Felder und Fragenkatalog** (30 Felder, je eine Frage an den Kunden) | `v2/briefing/briefing.js` (`FELDER`) | `src/domain/briefing` (Zod) | Fachwissen, das man nicht neu erfinden muss; macht Lücken im Gespräch sichtbar. |
-| K3 | **Lead-Scoring** (Gewichte 25/20/25/20/10, Schwellen 80/50/25, `null` bei unerreichbar) | `src/scoring.js`, `gastro-v3/dashboard/prospect-server.js` (`scoreProspect`) | `src/domain/leads/scoring.ts` | Reine Funktion, klar spezifiziert, zweimal bewährt. |
+| K3 | **Lead-Scoring = Need Score** (Gewichte 25/20/25/20/10, Schwellen 80/50/25, `null` bei unerreichbar). Der **Close Score** des Produktplans (Abschlusswahrscheinlichkeit) ist neu, hat kein Vorbild in den Referenzen und wird in Stufe 8 eigens entworfen – nur aus eigenen Beobachtungen, nie aus Google-Rezensionen | `src/scoring.js`, `gastro-v3/dashboard/prospect-server.js` (`scoreProspect`) | `src/domain/leads/scoring.ts` | Need Score: reine Funktion, klar spezifiziert, zweimal bewährt. |
 | K4 | **Website-Heuristik** (Bestell-/Reservierungsanbieter, Viewport, Copyright-Jahr, HTTPS) | `src/websiteAnalyzer.js` (größere Stichwortliste) | `src/server/leads/website-analysis.ts` | Wertvoll für die Priorisierung; muss um SSRF-Schutz, Größenlimit und Zeitlimit erweitert werden. |
-| K5 | **Google-Places-Textsuche** (Places API (New), Field Mask ohne Fotos/Rezensionen) | `src/placesClient.js`, `gastro-v3/dashboard/prospect-server.js` | Adapter hinter `PlacesSearchPort` (`src/server/integrations`) | Field-Mask-Disziplin ist richtig (Kosten, Datenschutz); Speicherung wird neu geregelt (B9). |
+| K5 | **Google-Places-Textsuche** (Places API (New), Field Mask ohne Fotos/Rezensionen) | `src/placesClient.js`, `gastro-v3/dashboard/prospect-server.js` | Adapter hinter `PlacesSearchPort`; Field Masks bereits als getestete Konstanten (`places-fields.ts`, ADR 0013) | Field-Mask-Disziplin ist richtig (Kosten, Datenschutz); Speicherung wird neu geregelt (B9). |
 | K6 | **Farbmathematik und WCAG-Kontrast** | `src/colorMath.js`, `gastro-v3/src/tokens/index.js` | `src/domain/color` | Grundlage aller Kontrast-Gates. In der Foundation bereits neu geschrieben (`contrast.ts`), weil die Studio-Tokens geprüft werden müssen. |
 | K7 | **Copy-Regeln gegen KI-Floskeln** (deutsch) mit Begründungstabelle | `v2/build/copyRefiner.js`, `v2/COPY-PRINZIPIEN.md` | `src/domain/content/copy-rules.ts` + DESIGN.md | Konkret, deutsch, begründet; als Regeldaten mit Tests übernehmen. Automatisches Umschreiben nur als Vorschlag, nie stillschweigend. |
 | K8 | **Katalog verbotener Gestaltungsmuster** (mehrfarbige Verläufe, drei gleiche Karten, Emoji-Icons, Text-auf-Foto-Schleier, Pillen-Flut, Schriftuntergrenzen …) | `v2/build/antiSlopLint.js`, `gastro-v3/src/judge/index.js` | DESIGN.md (Regeln) + später Prüfungen gegen gerenderte Seiten | Die Regeln sind gut; die Prüfmechanik (eigener HTML/CSS-Parser in v2, Regex in v3) nicht. |
@@ -100,7 +102,7 @@ Spezifikation dienen.
 | K10 | **Bildplan**: je Bildplatz Motiv, Rolle, Zuschnitt desktop/mobil, Fokuspunkt, Alt-Text, Herkunft, Rechte, Freigabe; Vorrang eigen > beauftragt/KI (gekennzeichnet) > gesichteter Stock; Haus/Team/Raum nie Stock | `v2/assets-pipeline/bildplan.js` | `src/domain/media` | Beseitigt die auffälligsten Glaubwürdigkeitsfehler. |
 | K11 | **Designsystem-Dokumentformat**: Farbrollen *mit Aufgabe*, Typo-Skala, 8-px-Raster, verbotene Muster je System, Herkunft je Wert | `v2/designsysteme/*.json/.md`, `v2/build/designsystemGenerator.js` | `src/domain/design-system` (Schema) | Format ja; die 36 generierten Inhalte nein (B12, Archetyp-Lotterie). |
 | K12 | **Referenzkatalog** (61 reale Restaurant-Websites, 40 Refero-Styles, je Analyse von Palette, Typo-Charakter, Rhythmus) | `v2/referenzen/` | `research/references/` (Daten, keine Code-Abhängigkeit) | Wertvolle Recherche. 14 Refero-Referenzen sind laut v2 ungeprüft und keine Restaurants → vor Nutzung sichten. |
-| K13 | **Betriebsregeln Reservierung**: Kapazität, Tischverteilung (Gruppen müssen auf Tische passen), Überschneidung, manuelle Einträge mit dauerhaftem Konflikthinweis, No-Show-Schutz mit serverseitigem Zustimmungstext, Wartezeit-Lernen | `src/betriebStore.js`, `test/tischverteilung.test.js`, `gastro-v3/src/wirt/store.js` | `src/domain/operations` (später) | Hoher fachlicher Wert, echte Wirts-Erfahrung. Erst im geplanten Betriebs-Schritt. |
+| K13 | **Betriebsregeln Reservierung**: Kapazität, Tischverteilung (Gruppen müssen auf Tische passen), Überschneidung, manuelle Einträge mit dauerhaftem Konflikthinweis, No-Show-Schutz mit serverseitigem Zustimmungstext, Wartezeit-Lernen | `src/betriebStore.js`, `test/tischverteilung.test.js`, `gastro-v3/src/wirt/store.js` | `src/domain/operations` (später) | Hoher fachlicher Wert, echte Wirts-Erfahrung. Erst mit der eigenen Bestellstrecke (ROADMAP Stufe 10); der Conversion-Layer (Stufe 5) braucht sie nicht. |
 | K14 | **Auth-Muster**: scrypt-Hashes, HMAC-signierte Sessions mit Ablauf, CSRF Double Submit, Vergleich in konstanter Zeit, Mandantentrennung als Datenzugriffsregel (nicht nur Route) | `gastro-v3/src/wirt/auth.js`, `gastro-v3/dashboard/auth.js` | Prinzipien in ARCHITECTURE.md; Umsetzung voraussichtlich über Supabase Auth + Row Level Security | Muster übernehmen, Eigenbau-Krypto nur wo nötig. |
 | K15 | **Datensparsame Resonanz-Messung** (keine IP, kein User-Agent, kein Cookie, gerundete Verweildauer) | `src/resonanzStore.js`, `src/resonanzBeacon.js` | Prinzip in ARCHITECTURE.md; Umsetzung später | Gutes DSGVO-Vorbild. |
 | K16 | **Deterministische Auswahl** (gleicher Betrieb → gleiche Ausgabe, stabiler Hash statt `Math.random()`) | `gastro-v3/src/composer/index.js` (`seedHash`) | `src/domain` bei Bedarf | Nur für Gleichstände zwischen *begründeten* Optionen, nie als Gestaltungsquelle (B12). |
@@ -142,7 +144,7 @@ fachliche Tiefe) · **hoch** (Geld, personenbezogene Daten, rechtliche Wirkung, 
 | K2 Briefing | niedrig | niedrig | niedrig | **niedrig** | Feldliste wächst unkontrolliert → Schema versionieren. |
 | K3 Scoring | niedrig | niedrig | niedrig | **niedrig** | Gewichte sind Heuristik → als solche kennzeichnen. |
 | K4 Website-Heuristik | niedrig | mittel | mittel | **mittel** | SSRF, hängende Anfragen, Robots-Regeln. Gegenmaßnahme: nur http(s), private Netze blockieren, Zeit- und Größenlimit, identifizierender User-Agent. |
-| K5 Places-Adapter | mittel | mittel | **hoch** | **hoch** | Nutzungsbedingungen (Speicherdauer, Anzeige), Kosten. Gegenmaßnahme: Aufbewahrungsregel im Datenmodell, Budgetwarnung, nur serverseitig, Tests nur gegen Mocks. |
+| K5 Places-Adapter | mittel | mittel | **hoch** | **hoch** | Nutzungsbedingungen (nur Place-IDs speichern, Google-Logo bei Anzeige), Kosten (Lead-Suche ist Enterprise-SKU). Gegenmaßnahme: feste Field Masks mit Tests, keine Places-Inhalte im Datenmodell, Budget-Alarm, nur serverseitig, Tests nur gegen Mocks. |
 | K6 Farbe/Kontrast | niedrig | niedrig | niedrig | **niedrig** | – |
 | K7 Copy-Regeln | mittel | niedrig | niedrig | **niedrig** | Übereifrige Regex zerstört korrekte Sätze → nur melden/vorschlagen, nie stumm umschreiben; Tests mit Positiv- und Negativbeispielen. |
 | K8 Verbotene Muster | niedrig | mittel | niedrig | **mittel** | Prüfung auf CSS-Ebene ist fehleranfällig → in React-Welt eher über Komponenten-API verhindern als nachträglich parsen. |
@@ -158,22 +160,28 @@ fachliche Tiefe) · **hoch** (Geld, personenbezogene Daten, rechtliche Wirkung, 
 | K18 Rechtliche Leitplanken | niedrig | niedrig | niedrig | **niedrig** | Veralten → bei Integrationen neu prüfen. |
 | K19 Schriften | niedrig | niedrig | mittel | **niedrig** | Lizenz je Schrift nachweisen. |
 
-## 6. Migrationsreihenfolge
+## 6. Reihenfolge
 
-Jede Stufe ist eine eigene Aufgabe mit Freigabe. Innerhalb jeder Stufe gilt: Referenz lesen →
-Spezifikation als Tests schreiben → neu implementieren → Entscheidung in `docs/decisions/` festhalten.
+Die Stufen stehen seit ADR 0012 in [`ROADMAP.md`](ROADMAP.md) (abgeglichen mit dem Produktplan).
+Innerhalb jeder Stufe gilt: Referenz lesen → Spezifikation als Tests schreiben → neu implementieren →
+Entscheidung in `docs/decisions/` festhalten.
 
-| Stufe | Inhalt | Kandidaten | Voraussetzung |
-|---|---|---|---|
-| **0 · Foundation** *(diese Aufgabe)* | Dokumente, Next.js-Grundgerüst, Health-Check, Checks, Ports als Typen | K6 (nur Kontrast, für Studio-Tokens) | – |
-| **1 · Fachkern ohne I/O** | Provenienzmodell, Briefing-Schema mit Fragenkatalog, Farbe/Kontrast vollständig, deterministischer Hash | K1, K2, K6, K16 | Stufe 0 |
-| **2 · Inhaltsqualität** | Copy-Regeln (melden + Vorschlag), Katalog verbotener Muster, Fakten-Gate für Rendering | K7, K8, K18 | Stufe 1 |
-| **3 · Designsystem und Art Direction** | Designsystem-Schema, Creative-Direction-Schema, Bildplan-Schema, Schriftregister, Referenzkatalog sichten | K9, K10, K11, K12, K19 | Stufe 1–2 |
-| **4 · Erste Komposition (Pilot)** | Eine fiktive, klar gekennzeichnete Pilotseite als React-Komposition – *Design zuerst*: Creative Direction und Bildplan vor dem ersten Code. Screenshot-Review vorbereiten | K17 | Stufe 3 |
-| **5 · Lead-Recherche (serverseitig)** | Scoring, Website-Heuristik mit SSRF-Schutz, Places-Adapter hinter Port, Aufbewahrungsregel | K3, K4, K5 | Stufe 1; Google-Key nur lokal/serverseitig |
-| **6 · Datenbank und Studio-Dashboard** | Ausdrücklich geplanter Schritt: Supabase-Schema, erste Migration, Auth, Row Level Security, Lead- und Briefing-Verwaltung | K14 | Stufe 5; Entscheidung zu Supabase-Region/AVV |
-| **7 · Betrieb (Wirt)** | Reservierung, Tischlogik, Abholung, No-Show, Benachrichtigungen (E-Mail über Resend, Push, Telegram) | K13, K15 | Stufe 6 |
-| **8 · Veröffentlichung** | Deployment je Kunde (Vercel oder anderer Node-Host), Freigabe-Gate, Domains | – | Stufe 4 + 6 |
+Zuordnung der Kandidaten zu den ROADMAP-Stufen:
 
-Die Reihenfolge folgt dem Risiko: erst reine, gut testbare Regeln, dann Gestaltung (weil das Produkt
-daran gemessen wird), dann I/O mit externen Diensten, zuletzt personenbezogene Betriebsdaten.
+| ROADMAP-Stufe | Kandidaten |
+|---|---|
+| 0 · Foundation ✅ | K6 (Kontrast für die Studio-Tokens) |
+| 1 · Fachkern und Content-Modell | K1, K2, K16 |
+| 2 · Inhaltsqualität | K7, K8, K18 |
+| 3 · Design Directions und Art Direction | K9, K10, K11, K12, K19 |
+| 4 · Referenzprojekt: erste Kundenseite | K17 |
+| 5 · Conversion-Layer | – (neu; nutzt K1/K18) |
+| 6 · Livegang | – |
+| 7 · Datenbank und Studio-Dashboard | K14 |
+| 8 · Lead-Recherche | K3, K4, K5 |
+| 9 · Betreiber-Dashboard | K15 |
+| 10 · Eigene Bestellstrecke | K13 |
+
+Die Reihenfolge folgt jetzt dem Weg zum ersten Umsatz – erst reine, gut testbare Regeln, dann
+Gestaltung und die erste echte Kundenseite, dann die Werkzeuge dahinter. Personenbezogene Betriebsdaten
+kommen zuletzt; gastro-v3 deckt die Lead-Recherche bis Stufe 8 ab.
