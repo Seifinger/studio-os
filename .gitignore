@@ -26,3 +26,11 @@ next-env.d.ts
 .DS_Store
 *.pem
 npm-debug.log*
+
+# Fremde Designreferenzen (Screenshots, Aufnahmen): nur lokal, nie im Repository (Urheberrecht)
+/references/**/*.png
+/references/**/*.jpg
+/references/**/*.jpeg
+/references/**/*.mov
+/references/**/*.mp4
+/references/**/*.webp

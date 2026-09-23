@@ -73,7 +73,7 @@ späteren Paket:
 | `apps/dashboard` | `src/app/(studio)` + `src/ui` (ab Stufe 7) | Studio eine eigene Sicherheitsgrenze/Domain bekommt |
 | `apps/customer-portal` | `src/app/(betrieb)` (ab Stufe 9) | wie Dashboard |
 | `packages/ui` | `src/ui` | eine zweite App es braucht |
-| `packages/design-system` | `src/domain/design` (Directions, Tokens) + `src/compositions` | – |
+| `packages/design-system` | `packages/design-system/` ✅ (Themes, Komposition, Motion, Bildbriefings; Alias, ADR 0022) + `src/domain/design` + `src/compositions` | Workspaces eingeführt werden |
 | `packages/site-generator` | `src/compositions` + `src/server/sites` | – |
 | `packages/scoring-engine` | `src/domain/leads` | – |
 | `packages/integrations` | `src/server/integrations` | – |

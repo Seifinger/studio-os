@@ -19,7 +19,7 @@ const SCALE = {
  * Mittlere Zeichenbreite je Schriftart in em – daraus berechnet der Hero die größte Schrift, bei
  * der das längste Wort des Namens noch in eine Zeile passt (großzügig geschätzt).
  */
-const NAME_FIT: Readonly<Record<FontCategory, number>> = {
+export const NAME_FIT: Readonly<Record<FontCategory, number>> = {
   serif: 0.62,
   "display-serif": 0.62,
   sans: 0.64,

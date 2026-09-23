@@ -19,6 +19,9 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
 - Übernahmen laufen nach `MIGRATION.md`: Regeln und Tests als Spezifikation lesen, neu in TypeScript
   schreiben, Quelle (Datei + Commit) in einem ADR nennen.
 - Was dort instabil, doppelt oder unklar ist, wird dokumentiert (`MIGRATION.md`, Abschnitt 2), nicht migriert.
+- Fremde Designreferenzen (z. B. Dishoom) liegen nur lokal unter `references/` und werden nie
+  committet. Übernommen werden nur abstrakte Prinzipien; die Liste „nicht kopieren“ in
+  `docs/design-studies/dishoom-analysis.md` §11 ist verbindlich.
 
 ## 2. Arbeitsweise
 
@@ -85,6 +88,8 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
 
 - TypeScript strict (siehe `tsconfig.json`), kein `any` – `unknown` + Zod an jeder Grenze.
 - Modulgrenzen aus `ARCHITECTURE.md`, Abschnitt 3 einhalten; `tests/unit/architecture.test.ts` prüft sie.
+  `packages/design-system` bleibt rein (nur `zod`, eigene Dateien, `@/domain`); Themes nur über
+  `extendTheme` und die Registry (ADR 0022).
 - `domain` ist rein: kein I/O, kein React, kein Next, kein `process.env`.
 - Bezeichner im Code englisch, UI-Texte und Dokumentation deutsch (ADR 0008). Fachbegriffe ohne
   treffende Übersetzung bleiben deutsch, dann konsequent.

@@ -53,9 +53,23 @@ describe("Architekturregeln", () => {
       .filter((file) => file.relative.startsWith("src/catalog/") && !isTest(file))
       .flatMap((file) =>
         importsOf(file.content)
-          .filter((spec) => !/^@\/domain\/|^\.\.?\/|^zod$/.test(spec))
+          .filter((spec) => !/^@\/domain\/|^@studio\/design-system\/|^\.\.?\/|^zod$/.test(spec))
           .map((spec) => `${file.relative} importiert ${spec}`),
       );
+    expect(violations).toEqual([]);
+  });
+
+  it("Regel 9: packages/design-system ist rein – nur zod, eigene Dateien und domain", () => {
+    const files = sourceFiles(path.join(root, "packages", "design-system", "src"));
+    expect(files.map((file) => file.relative)).toContain("packages/design-system/src/themes/schema.ts");
+    const violations = files
+      .filter((file) => !isTest(file))
+      .flatMap((file) => [
+        ...importsOf(file.content)
+          .filter((spec) => !/^@\/domain\/|^\.\.?\/|^zod$/.test(spec))
+          .map((spec) => `${file.relative} importiert ${spec}`),
+        ...(file.content.includes("process.env") ? [`${file.relative} liest process.env`] : []),
+      ]);
     expect(violations).toEqual([]);
   });
 

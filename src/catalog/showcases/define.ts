@@ -53,13 +53,11 @@ function phone(slug: string, input: string): PhoneNumber {
   return parsed.phone;
 }
 
-/** Prüft einen Beispielbetrieb vollständig. Ein Fehler bricht den Build ab, statt still zu rendern. */
-export function defineShowcase(input: ShowcaseInput): Showcase {
-  const { slug } = input;
+/** Rohwerte → geprüftes Profil mit Status „fiktiv“; bricht bei ungültigen oder echt wirkenden Angaben ab. */
+export function fictionProfile(slug: string, facts: ShowcaseFacts): RestaurantProfile {
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new ShowcaseError(`Ungültiger Slug: ${slug}`);
-
   const raw: Record<string, { status: "fiktiv"; value: unknown }> = {};
-  for (const [field, value] of Object.entries(input.facts)) {
+  for (const [field, value] of Object.entries(facts)) {
     if (value === undefined) continue;
     const resolved = (field === "phone" || field === "whatsapp") && typeof value === "string" ? phone(slug, value) : value;
     raw[field] = { status: "fiktiv", value: resolved };
@@ -71,6 +69,13 @@ export function defineShowcase(input: ShowcaseInput): Showcase {
   if (postalCode !== undefined && !postalCode.startsWith("00")) {
     throw new ShowcaseError(`${slug}: Beispielbetriebe nutzen nur Postleitzahlen mit 00 (nicht vergeben)`);
   }
+  return profile.data;
+}
+
+/** Prüft einen Beispielbetrieb vollständig. Ein Fehler bricht den Build ab, statt still zu rendern. */
+export function defineShowcase(input: ShowcaseInput): Showcase {
+  const { slug } = input;
+  const profile = fictionProfile(slug, input.facts);
 
   const creative = creativeDirectionSchema.safeParse(input.creative);
   if (!creative.success) throw new ShowcaseError(`${slug}: Creative Direction ungültig – ${creative.error.message}`);
@@ -81,7 +86,7 @@ export function defineShowcase(input: ShowcaseInput): Showcase {
     return parsed.data;
   });
 
-  return { slug, direction: directionById(input.direction), profile: profile.data, creative: creative.data, imageSlots };
+  return { slug, direction: directionById(input.direction), profile, creative: creative.data, imageSlots };
 }
 
 /**

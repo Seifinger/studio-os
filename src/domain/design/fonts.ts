@@ -16,6 +16,8 @@ export type FontFamily = {
   readonly weights: readonly number[];
   /** Nur lateinische Zeichensätze laden (Schriften mit sehr großen CJK-Zeichensätzen). */
   readonly latinOnly?: boolean;
+  /** Echte Kursivschnitte – ohne Eintrag setzt der Browser eine falsche, schräggestellte Kursive. */
+  readonly italics?: readonly number[];
 };
 
 export const FONT_FAMILIES = [
@@ -36,7 +38,7 @@ export const FONT_FAMILIES = [
   { id: "antonio", family: "Antonio", package: "@fontsource/antonio", license: "OFL-1.1", category: "condensed", weights: [700] },
   { id: "zen-kaku-gothic-new", family: "Zen Kaku Gothic New", package: "@fontsource/zen-kaku-gothic-new", license: "OFL-1.1", category: "sans", weights: [400, 700], latinOnly: true },
   { id: "rozha-one", family: "Rozha One", package: "@fontsource/rozha-one", license: "OFL-1.1", category: "display-serif", weights: [400] },
-  { id: "source-serif-4", family: "Source Serif 4", package: "@fontsource/source-serif-4", license: "OFL-1.1", category: "serif", weights: [400, 700] },
+  { id: "source-serif-4", family: "Source Serif 4", package: "@fontsource/source-serif-4", license: "OFL-1.1", category: "serif", weights: [400, 700], italics: [400] },
   { id: "schibsted-grotesk", family: "Schibsted Grotesk", package: "@fontsource/schibsted-grotesk", license: "OFL-1.1", category: "sans", weights: [400, 800] },
   { id: "instrument-serif", family: "Instrument Serif", package: "@fontsource/instrument-serif", license: "OFL-1.1", category: "display-serif", weights: [400] },
   { id: "instrument-sans", family: "Instrument Sans", package: "@fontsource/instrument-sans", license: "OFL-1.1", category: "sans", weights: [400, 700] },
@@ -71,9 +73,21 @@ export function fontStack(id: FontId): string {
 /** Pfade der CSS-Dateien, die eine Schrift im Paket einbindet. */
 export function fontStylesheets(id: FontId): string[] {
   const font = fontById(id);
-  return font.weights.map((weight) => `${font.package}/${font.latinOnly ? `latin-${weight}` : weight}.css`);
+  const prefix = font.latinOnly ? "latin-" : "";
+  return [
+    ...font.weights.map((weight) => `${font.package}/${prefix}${weight}.css`),
+    ...(font.italics ?? []).map((weight) => `${font.package}/${prefix}${weight}-italic.css`),
+  ];
+}
+
+/** Hat die Schrift einen echten Kursivschnitt in diesem Gewicht? */
+export function hasItalic(id: FontId, weight: number): boolean {
+  return (fontById(id).italics ?? []).includes(weight);
 }
 
 export function registryProblems(): string[] {
-  return FONT_FAMILIES.flatMap((font) => (isBannedFontFamily(font.family) ? [`${font.family} steht auf der Verbotsliste (S1)`] : []));
+  return FONT_FAMILIES.flatMap((font: FontFamily) => [
+    ...(isBannedFontFamily(font.family) ? [`${font.family} steht auf der Verbotsliste (S1)`] : []),
+    ...(font.italics ?? []).filter((weight) => !font.weights.includes(weight)).map((weight) => `${font.family}: Kursive ${weight} ohne aufrechten Schnitt`),
+  ]);
 }

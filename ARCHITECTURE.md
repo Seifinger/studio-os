@@ -58,7 +58,12 @@ src/
 │  ├─ leads/             Lead-Demo laden, lokale Freischaltung.
 │  └─ integrations/      Ports, Field Masks und Adapter (Google Place Details); später Supabase, Resend, Vercel, KI.
 ├─ ui/                   (später) Funktionale UI des Studios: Button, Feld, Tabelle … – ein stabiles Token-Set.
-└─ compositions/         Kreative Website-Kompositionen. restaurant/: Seite aus Profil + Direction + Dramaturgie (ADR 0020).
+└─ compositions/         Kreative Website-Kompositionen. restaurant/: Seite aus Profil + Direction + Dramaturgie (ADR 0020);
+                         narrative-editorial/: erzählende Seite aus Theme + NarrativeConfig (ADR 0022).
+packages/
+└─ design-system/src/    Rein (zod + domain): themes/ (Schema, Basis, Küchen-Themes, Registry, CSS-Variablen),
+                         composition/ (Sequenz), motion/ (Profil, reduced motion), media/ (Bildbriefings, Prompts).
+                         Import über den Alias @studio/design-system/* (ADR 0022).
 tests/
 ├─ unit/                 Übergreifende Tests (z. B. Architekturregeln).
 ├─ export/               Veröffentlichungsprüfung gegen out/ (npm run check:export).
@@ -85,7 +90,9 @@ app ──► server ──► domain
 6. Kein Import aus den Referenzprojekten `../gastro-webagentur` oder `../gastro-v3`.
 
 Regeln 1, 2, 3 und 6 prüft `tests/unit/architecture.test.ts` bei jedem `npm test`, dazu: `catalog`
-importiert nur `domain` (Regel 7), `compositions` importiert weder `server` noch `ui` (Regel 8).
+importiert nur `domain` und `@studio/design-system` (Regel 7), `compositions` importiert weder
+`server` noch `ui` (Regel 8), `packages/design-system` importiert nur `zod`, eigene Dateien und
+`domain` und liest kein `process.env` (Regel 9).
 Regel 5 wird geprüft, sobald es einen Composition Root gibt.
 
 ### Build-Ziele (ADR 0020)

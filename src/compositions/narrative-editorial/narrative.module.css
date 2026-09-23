@@ -1,0 +1,1133 @@
+/*
+ * Komposition narrative-editorial (ADR 0022). Alle Farben, Schriften und Maße kommen als
+ * --ne-* aus dem Theme, alle Bewegungswerte als --m-* aus dem Motion-Profil. Hier stehen keine
+ * Werte eines bestimmten Hauses. Akte: [data-act="night"] dunkel, [data-act="paper"] hell.
+ */
+
+.root {
+  min-height: 100dvh;
+  background-color: var(--ne-night);
+  color: var(--ne-ink);
+  font-family: var(--ne-text-font);
+  font-size: var(--ne-size-body);
+  font-weight: var(--ne-text-weight);
+  line-height: var(--ne-text-leading);
+  font-kerning: normal;
+  hyphens: auto;
+  color-scheme: light;
+}
+
+:where(.root) a {
+  color: inherit;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+:where(.root) :where(h1, h2, h3) {
+  font-family: var(--ne-display-font);
+  font-style: var(--ne-display-style);
+  font-weight: var(--ne-display-weight);
+  letter-spacing: var(--ne-display-tracking);
+  line-height: var(--ne-display-leading);
+  text-transform: var(--ne-display-case);
+  text-wrap: balance;
+  hyphens: manual;
+}
+
+:where(.root) p {
+  text-wrap: pretty;
+}
+
+.root :focus-visible {
+  outline: var(--ne-focus-width) solid var(--ne-focus);
+  outline-offset: 3px;
+}
+
+.wrap {
+  width: 100%;
+  max-width: var(--ne-wide);
+  margin-inline: auto;
+  padding-inline: var(--ne-gutter);
+}
+
+.label {
+  font-family: var(--ne-label-font);
+  font-size: 0.75rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  line-height: var(--ne-label-leading);
+  text-transform: var(--ne-label-case);
+}
+
+.caption {
+  font-family: var(--ne-caption-font);
+  font-size: var(--ne-size-small);
+  font-style: var(--ne-caption-style);
+  line-height: var(--ne-caption-leading);
+}
+
+.small {
+  margin-top: var(--ne-space-m);
+  color: var(--ne-ink-muted);
+  font-size: var(--ne-size-small);
+}
+
+/* Akte: Grund und Schrift je Stimmungsraum. */
+.root [data-act="paper"] {
+  background-color: var(--ne-paper);
+  color: var(--ne-ink);
+}
+
+.root [data-act="night"] {
+  background-color: var(--ne-night);
+  color: var(--ne-night-ink);
+}
+
+[data-act="night"] .small,
+[data-act="night"] .caption,
+[data-act="night"] .label {
+  color: var(--ne-night-muted);
+}
+
+.notice {
+  padding-block: 0.5rem;
+  background-color: var(--ne-paper);
+  color: var(--ne-ink);
+  font-size: var(--ne-size-small);
+  line-height: 1.4;
+}
+
+.notice p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.25rem;
+  justify-content: space-between;
+}
+
+.notice a {
+  font-weight: 700;
+}
+
+/* Kopf: ein dunkles Band wie ein Ladenschild. Über dem Eingang durchsichtig, beim Scrollen fest. */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  color: var(--ne-night-ink);
+}
+
+.header::before,
+.header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.header::before {
+  background-color: var(--ne-night);
+}
+
+.header::after {
+  top: auto;
+  height: 2px;
+  background-color: var(--ne-night-primary);
+}
+
+.headerInner {
+  display: flex;
+  align-items: center;
+  gap: var(--ne-space-m);
+  min-height: 3.75rem;
+}
+
+.brand {
+  margin-right: auto;
+  font-family: var(--ne-display-font);
+  font-size: 1.4rem;
+  font-weight: var(--ne-display-weight);
+  letter-spacing: var(--ne-display-tracking);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.nav {
+  display: none;
+}
+
+.nav ul {
+  display: flex;
+  gap: var(--ne-space-l);
+}
+
+.nav a,
+.sheetPanel nav a {
+  font-family: var(--ne-label-font);
+  font-size: 0.8125rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  text-decoration: none;
+  text-transform: var(--ne-label-case);
+}
+
+.nav a {
+  display: inline-block;
+  padding-block: 0.75rem;
+  background-image: linear-gradient(currentcolor, currentcolor);
+  background-position: 0 85%;
+  background-repeat: no-repeat;
+  background-size: 0% 1px;
+  transition: background-size var(--m-hover) var(--m-ease);
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  background-size: 100% 1px;
+}
+
+.headerCta {
+  display: none;
+}
+
+.sheetToggle {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ne-touch);
+  padding-inline: 1rem;
+  border: 1px solid currentcolor;
+  border-radius: var(--ne-radius);
+  font-family: var(--ne-label-font);
+  font-size: 0.8125rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  list-style: none;
+  text-transform: var(--ne-label-case);
+  cursor: pointer;
+}
+
+.sheetToggle::-webkit-details-marker {
+  display: none;
+}
+
+.sheetPanel {
+  position: absolute;
+  inset-inline: 0;
+  top: 100%;
+  display: grid;
+  gap: var(--ne-space-l);
+  padding: var(--ne-space-m) var(--ne-gutter) var(--ne-space-l);
+  border-bottom: 2px solid var(--ne-night-primary);
+  background-color: var(--ne-night);
+}
+
+.sheetPanel nav a {
+  display: block;
+  padding-block: 0.9rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--ne-night-ink) 18%, transparent);
+  font-size: 1rem;
+}
+
+@media (min-width: 56rem) {
+  .headerInner {
+    min-height: 4.5rem;
+  }
+
+  .nav {
+    display: block;
+  }
+
+  .headerCta {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding-inline: 1rem;
+    border-radius: var(--ne-radius);
+    background-color: var(--ne-night-primary);
+    color: var(--ne-on-night-primary);
+    font-family: var(--ne-label-font);
+    font-size: 0.8125rem;
+    font-weight: var(--ne-label-weight);
+    letter-spacing: var(--ne-label-tracking);
+    text-decoration: none;
+    text-transform: var(--ne-label-case);
+  }
+
+  .sheet {
+    display: none;
+  }
+}
+
+/* Handlung: ein gefüllter Weg, ein umrandeter. Größe bleibt beim Hover, nur der Grund wechselt. */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ne-space-s);
+}
+
+.ctaPrimary,
+.ctaSecondary,
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--ne-touch);
+  padding: 0.75rem 1.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--ne-radius);
+  font-family: var(--ne-label-font);
+  font-size: 0.875rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  line-height: 1.2;
+  text-decoration: none;
+  text-transform: var(--ne-label-case);
+  transition:
+    background-color var(--m-hover) var(--m-ease),
+    color var(--m-hover) var(--m-ease),
+    border-color var(--m-hover) var(--m-ease);
+}
+
+.ctaPrimary[data-tone="night"] {
+  background-color: var(--ne-night-primary);
+  color: var(--ne-on-night-primary);
+}
+
+.ctaPrimary[data-tone="paper"],
+.submit {
+  background-color: var(--ne-primary);
+  color: var(--ne-on-primary);
+}
+
+.ctaSecondary {
+  border-color: currentcolor;
+  background-color: transparent;
+}
+
+.ctaPrimary:hover,
+.ctaSecondary:hover {
+  border-color: currentcolor;
+  background-color: transparent;
+  color: inherit;
+}
+
+.ctaSecondary[data-tone="night"]:hover {
+  background-color: var(--ne-night-ink);
+  color: var(--ne-night);
+}
+
+/* Eingang: Nacht, Name wie ein gemaltes Schild, Zeiten als Aushang. */
+.root [data-kind] {
+  scroll-margin-top: 3.75rem;
+}
+
+.hero {
+  display: flex;
+  min-height: calc(100svh - 6.5rem);
+  padding-block: var(--ne-space-xl) var(--ne-space-l);
+}
+
+/* Mobil: Name, Satz, Handlung, dann Zeiten – beide Wege stehen auf dem ersten Bildschirm. */
+.heroInner {
+  display: grid;
+  grid-template-rows: 1fr auto auto;
+  gap: var(--ne-space-l);
+}
+
+.heroMain {
+  align-self: end;
+  container-type: inline-size;
+  min-width: 0;
+}
+
+.kicker {
+  margin-bottom: var(--ne-space-m);
+  color: var(--ne-night-muted);
+  font-family: var(--ne-label-font);
+  font-size: 0.8125rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  text-transform: var(--ne-label-case);
+}
+
+.heroTitle {
+  font-size: min(var(--ne-size-hero), calc(100cqi / (var(--name-chars) * var(--name-fit))));
+  overflow-wrap: break-word;
+}
+
+.heroHours {
+  padding-block: var(--ne-space-s);
+  border-block: 1px solid color-mix(in srgb, var(--ne-night-ink) 22%, transparent);
+  color: var(--ne-night-ink);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.heroHours ul {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+}
+
+.heroDays {
+  display: inline-block;
+  min-width: 4.5rem;
+  color: var(--ne-night-primary);
+}
+
+.heroFoot {
+  display: grid;
+  gap: var(--ne-space-l);
+}
+
+.heroClaim {
+  max-width: 34ch;
+  font-size: var(--ne-size-lead);
+  line-height: 1.4;
+}
+
+@media (max-width: 30rem) {
+  .ctaPrimary,
+  .ctaSecondary {
+    padding-inline: 1.05rem;
+  }
+}
+
+@media (min-width: 56rem) {
+  .hero {
+    min-height: min(calc(100svh - 6.5rem), 58rem);
+  }
+
+  .heroInner {
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
+    grid-template-rows: 1fr auto;
+    column-gap: var(--ne-space-xxl);
+  }
+
+  .heroMain {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .heroHours {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+  }
+
+  .heroFoot {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    padding-top: var(--ne-space-l);
+    border-top: 1px solid color-mix(in srgb, var(--ne-night-ink) 22%, transparent);
+  }
+}
+
+/* Behauptung: ein Satz nach dem Kontrastwechsel, groß und schmal gesetzt. */
+.claim {
+  padding-block: var(--ne-act) var(--ne-section);
+}
+
+.claimText {
+  max-width: 22ch;
+  font-size: var(--ne-size-claim);
+  line-height: 1.18;
+}
+
+.claimText::before {
+  content: "";
+  display: block;
+  width: 3rem;
+  margin-bottom: var(--ne-space-l);
+  border-top: 3px solid var(--ne-accent);
+}
+
+.section {
+  padding-block: var(--ne-section);
+}
+
+.section[data-act-change],
+.closing[data-act-change] {
+  padding-top: var(--ne-act);
+}
+
+.head {
+  display: grid;
+  gap: var(--ne-space-xs);
+  margin-bottom: var(--ne-space-xl);
+}
+
+.head .label {
+  color: var(--ne-ink-muted);
+}
+
+[data-act="night"] .head .label {
+  color: var(--ne-night-muted);
+}
+
+.h2 {
+  font-size: var(--ne-size-h2);
+  line-height: max(var(--ne-display-leading), 1);
+}
+
+.h3 {
+  font-size: var(--ne-size-h3);
+}
+
+.split {
+  display: grid;
+}
+
+@media (min-width: 56rem) {
+  .split {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    column-gap: var(--ne-space-xxl);
+  }
+
+  .split > .head {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+  }
+}
+
+.lead {
+  max-width: var(--ne-measure);
+  font-size: var(--ne-size-lead);
+  line-height: 1.45;
+}
+
+.body {
+  max-width: var(--ne-measure);
+}
+
+@media (max-width: 40rem) {
+  .lead,
+  .body,
+  .claimText {
+    max-width: var(--ne-measure-mobile);
+  }
+}
+
+/* Erzählung: Kapitel und Bildbelege im Wechsel; am großen Bildschirm versetzt. */
+.storyBody {
+  display: grid;
+  gap: var(--ne-space-xl);
+}
+
+.storyChapter {
+  display: grid;
+  gap: var(--ne-space-l);
+}
+
+@media (min-width: 56rem) {
+  .storyChapter[data-rhythm="b"] .frame {
+    width: 78%;
+    margin-left: auto;
+  }
+
+  .storyChapter[data-rhythm="a"] .frame {
+    width: 88%;
+  }
+}
+
+/* Bildplatz: das Briefing als Rahmen – erkennbar leer, nie mit einem Foto zu verwechseln. */
+.frame {
+  display: grid;
+  gap: var(--ne-space-xs);
+  margin: 0;
+}
+
+.frameWindow {
+  overflow: hidden;
+  aspect-ratio: var(--ratio-m);
+  border: 1px solid color-mix(in srgb, currentcolor 35%, transparent);
+  border-radius: var(--ne-radius);
+}
+
+@media (min-width: 48rem) {
+  .frameWindow {
+    aspect-ratio: var(--ratio-d);
+  }
+}
+
+.frameInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--ne-space-xs);
+  height: 100%;
+  padding: var(--ne-space-m);
+  background-color: color-mix(in srgb, currentcolor 6%, transparent);
+  background-image: repeating-linear-gradient(-45deg, color-mix(in srgb, currentcolor 9%, transparent) 0 1px, transparent 1px 11px);
+}
+
+.frameLabel {
+  font-family: var(--ne-label-font);
+  font-size: 0.6875rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  text-transform: var(--ne-label-case);
+}
+
+.frameSubject {
+  max-width: 30ch;
+  font-size: var(--ne-size-lead);
+  line-height: 1.3;
+}
+
+.frameLight {
+  max-width: 40ch;
+  font-family: var(--ne-caption-font);
+  font-size: var(--ne-size-small);
+  font-style: var(--ne-caption-style);
+  opacity: 0.85;
+}
+
+.frame .caption {
+  color: var(--ne-ink-muted);
+}
+
+.frame[data-tone="night"] .caption {
+  color: var(--ne-night-muted);
+}
+
+/* Handwerk: Hausgerichte groß wie auf einer gemalten Tafel, Handgriffe als ruhige Liste. */
+.craftBody {
+  display: grid;
+  gap: var(--ne-space-xl);
+}
+
+.dishes {
+  display: grid;
+  border-top: 2px solid currentcolor;
+}
+
+.dishes li {
+  padding-block: var(--ne-space-s);
+  border-bottom: 1px solid var(--ne-line);
+  font-family: var(--ne-display-font);
+  font-size: var(--ne-size-h3);
+  font-weight: var(--ne-display-weight);
+  letter-spacing: var(--ne-display-tracking);
+  line-height: 1.1;
+}
+
+@media (min-width: 40rem) {
+  .dishes li {
+    font-size: calc(var(--ne-size-h3) * 1.35);
+  }
+}
+
+.proofs {
+  display: grid;
+  gap: var(--ne-space-m);
+  max-width: var(--ne-measure);
+  counter-reset: proof;
+}
+
+.proofs li {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  counter-increment: proof;
+}
+
+.proofs li::before {
+  content: counter(proof);
+  color: var(--ne-accent);
+  font-family: var(--ne-display-font);
+  font-size: 1.5rem;
+  font-weight: var(--ne-display-weight);
+  line-height: 1.1;
+}
+
+/* Karte: Kategorien direkt anspringbar, horizontal wischbar. */
+.categoryNav {
+  position: sticky;
+  top: 3.75rem;
+  z-index: 5;
+  margin-inline: calc(var(--ne-gutter) * -1);
+  margin-bottom: var(--ne-space-xl);
+  padding-inline: var(--ne-gutter);
+  border-block: 1px solid var(--ne-line);
+  background-color: var(--ne-paper);
+}
+
+.categoryNav ul {
+  display: flex;
+  gap: var(--ne-space-l);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.categoryNav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ne-touch);
+  font-family: var(--ne-label-font);
+  font-size: 0.75rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  text-decoration: none;
+  text-transform: var(--ne-label-case);
+  white-space: nowrap;
+}
+
+.categoryNav a:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 56rem) {
+  .categoryNav {
+    top: 4.5rem;
+  }
+}
+
+.menuGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+  gap: var(--ne-space-xl) var(--ne-space-xxl);
+}
+
+.menuGroup {
+  scroll-margin-top: 8.5rem;
+}
+
+.menuGroup .h3 {
+  padding-bottom: var(--ne-space-xs);
+  border-bottom: 2px solid currentcolor;
+}
+
+.menuNote {
+  margin-top: var(--ne-space-xs);
+  color: var(--ne-ink-muted);
+  font-family: var(--ne-caption-font);
+  font-size: var(--ne-size-small);
+  font-style: var(--ne-caption-style);
+}
+
+.menuList {
+  display: grid;
+}
+
+.menuItem {
+  padding-block: 0.85rem;
+  border-bottom: 1px solid var(--ne-line);
+}
+
+.menuRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.menuName {
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.menuLeader {
+  flex: 1 1 1.5rem;
+  min-width: 1.5rem;
+  border-bottom: 2px dotted color-mix(in srgb, var(--ne-ink) 45%, transparent);
+  transform: translateY(-0.25em);
+}
+
+.menuPrice {
+  flex: none;
+  margin-left: auto;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.menuDescription {
+  max-width: 44ch;
+  color: var(--ne-ink-muted);
+  font-size: 0.95rem;
+}
+
+.menuMeta {
+  margin-top: 0.2rem;
+  color: var(--ne-ink-muted);
+  font-size: 0.8125rem;
+}
+
+/* Raum: Bildreihe, per Tastatur (Fokus + Pfeiltasten) und Wischen bedienbar, ohne Autoplay. */
+.galleryWrap {
+  margin-top: var(--ne-space-xl);
+}
+
+.gallery {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-padding-inline: var(--ne-gutter);
+  scroll-snap-type: x mandatory;
+}
+
+.gallery ul {
+  display: grid;
+  grid-auto-columns: minmax(15rem, 72%);
+  grid-auto-flow: column;
+  gap: var(--ne-space-m);
+  width: max-content;
+  min-width: 100%;
+  padding-inline: var(--ne-gutter);
+  padding-bottom: var(--ne-space-s);
+}
+
+.gallery li {
+  scroll-snap-align: start;
+}
+
+@media (min-width: 48rem) {
+  .gallery ul {
+    grid-auto-columns: 22rem;
+  }
+}
+
+.galleryHint {
+  margin-top: var(--ne-space-xs);
+  color: var(--ne-night-muted);
+  font-size: var(--ne-size-small);
+}
+
+/* Anfrage */
+.notes {
+  display: grid;
+  gap: var(--ne-space-s);
+  margin-top: var(--ne-space-l);
+  max-width: var(--ne-measure);
+}
+
+.notes li {
+  padding-left: var(--ne-space-m);
+  border-left: 2px solid var(--ne-accent);
+}
+
+.form {
+  display: grid;
+  gap: var(--ne-space-m);
+  margin-top: var(--ne-space-l);
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px solid var(--ne-line);
+  border-radius: var(--ne-radius);
+  background-color: var(--ne-paper-raised);
+}
+
+@media (min-width: 40rem) {
+  .form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 56rem) {
+  .form {
+    margin-top: 0;
+  }
+}
+
+.field,
+.fieldWide {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+}
+
+.fieldWide,
+.formFoot {
+  grid-column: 1 / -1;
+}
+
+.field label,
+.fieldWide label {
+  font-family: var(--ne-label-font);
+  font-size: 0.75rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  text-transform: var(--ne-label-case);
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  min-height: var(--ne-touch);
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--ne-ink-muted);
+  border-radius: var(--ne-radius);
+  background-color: var(--ne-paper);
+  color: var(--ne-ink);
+  font: inherit;
+}
+
+.formFoot {
+  display: grid;
+  gap: var(--ne-space-xs);
+}
+
+.submit {
+  justify-self: start;
+  cursor: pointer;
+}
+
+.submit:disabled {
+  border-color: var(--ne-ink-muted);
+  border-style: dashed;
+  background-color: transparent;
+  color: var(--ne-ink-muted);
+  cursor: not-allowed;
+}
+
+/* Anfahrt */
+.visitBody {
+  display: grid;
+  gap: var(--ne-space-xl);
+}
+
+@media (min-width: 40rem) {
+  .visitBody {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  }
+}
+
+.address {
+  display: grid;
+  gap: 0.2rem;
+  font-size: var(--ne-size-lead);
+  font-style: normal;
+  line-height: 1.4;
+}
+
+.address strong {
+  font-family: var(--ne-display-font);
+  font-weight: var(--ne-display-weight);
+}
+
+.hours {
+  display: grid;
+  border-top: 2px solid currentcolor;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.hours > div {
+  display: grid;
+  grid-template-columns: minmax(5rem, 7.5rem) minmax(0, 1fr);
+  gap: var(--ne-space-s);
+  padding-block: 0.7rem;
+  border-bottom: 1px solid var(--ne-line);
+}
+
+.hours dt {
+  font-weight: 700;
+}
+
+/* Abschluss: Nacht, ein Satz, die Handlung. */
+.closing {
+  padding-block: var(--ne-act);
+}
+
+.closingTitle {
+  max-width: 16ch;
+  margin-bottom: var(--ne-space-xl);
+  font-size: calc(var(--ne-size-h2) * 1.25);
+}
+
+.closingMeta {
+  margin-top: var(--ne-space-l);
+  color: var(--ne-night-muted);
+}
+
+.footer {
+  padding-block: var(--ne-space-xl) calc(var(--ne-space-xxl) + var(--ne-space-l));
+  background-color: var(--ne-paper);
+  color: var(--ne-ink);
+  font-size: var(--ne-size-small);
+}
+
+.footerInner {
+  display: grid;
+  gap: var(--ne-space-l);
+}
+
+@media (min-width: 48rem) {
+  .footerInner {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+}
+
+.footerName {
+  font-family: var(--ne-display-font);
+  font-size: 2rem;
+  font-weight: var(--ne-display-weight);
+  line-height: 1;
+}
+
+.footerMeta {
+  display: grid;
+  gap: var(--ne-space-s);
+  color: var(--ne-ink-muted);
+}
+
+.footerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--ne-space-l);
+}
+
+.footerLinks a {
+  display: inline-block;
+  padding-block: 0.6rem;
+  color: var(--ne-ink);
+}
+
+/* Mobile Handlungsleiste: nur bis zur Tablet-Breite; per Skript kontextbezogen ein- und ausgeblendet. */
+.bar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 30;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  gap: 1px;
+  padding-bottom: env(safe-area-inset-bottom);
+  border-top: 2px solid var(--ne-night-primary);
+  background-color: var(--ne-night);
+  transition:
+    transform var(--m-hover) var(--m-ease),
+    visibility 0s linear;
+}
+
+.bar[data-hidden] {
+  visibility: hidden;
+  transform: translateY(110%);
+  transition:
+    transform var(--m-hover) var(--m-ease),
+    visibility 0s linear var(--m-hover);
+}
+
+.barPrimary,
+.barSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.25rem;
+  font-family: var(--ne-label-font);
+  font-size: 0.8125rem;
+  font-weight: var(--ne-label-weight);
+  letter-spacing: var(--ne-label-tracking);
+  text-decoration: none;
+  text-transform: var(--ne-label-case);
+}
+
+.barPrimary {
+  background-color: var(--ne-night-primary);
+  color: var(--ne-on-night-primary);
+}
+
+.barSecondary {
+  color: var(--ne-night-ink);
+}
+
+@media (min-width: 56rem) {
+  .bar {
+    display: none;
+  }
+}
+
+/*
+ * Bewegung (motion/narrative-editorial.ts): nur mit eingeschaltetem Effekt, nur ohne Wunsch nach
+ * reduzierter Bewegung und nur, wo der Browser Scroll-Timelines kennt. Animiert werden nur
+ * opacity, transform und eine Maske, deren Deckkraft nie unter --m-text-min fällt.
+ */
+@property --reveal {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root *,
+  .root *::before,
+  .root *::after {
+    transition-delay: 0s !important;
+    transition-duration: 0s !important;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .root[data-motion-header="on"] .header::before,
+    .root[data-motion-header="on"] .header::after {
+      animation: header-fill linear both;
+      animation-range: 0 var(--m-header-range);
+      animation-timeline: scroll(root);
+    }
+
+    .root[data-motion-text="on"] [data-reveal-text] {
+      animation: text-reveal linear both;
+      animation-range: entry 15% cover 45%;
+      animation-timeline: view();
+      mask-image: linear-gradient(to bottom, currentcolor var(--reveal), color-mix(in srgb, currentcolor calc(var(--m-text-min) * 100%), transparent) calc(var(--reveal) + 18%));
+    }
+
+    .root[data-motion-section="on"] [data-reveal] {
+      animation: section-rise linear both;
+      animation-range: entry 5% cover 25%;
+      animation-timeline: view();
+    }
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (min-width: 56rem) {
+      .root[data-motion-image="on"] [data-drift] {
+        animation: image-drift linear both;
+        animation-timeline: view();
+        scale: 1.08;
+      }
+    }
+  }
+}
+
+@keyframes header-fill {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes text-reveal {
+  from {
+    --reveal: 0%;
+  }
+
+  to {
+    --reveal: 100%;
+  }
+}
+
+@keyframes section-rise {
+  from {
+    opacity: var(--m-rise-min);
+    transform: translateY(var(--m-rise));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes image-drift {
+  from {
+    transform: translateY(calc(var(--m-drift) * -1));
+  }
+
+  to {
+    transform: translateY(var(--m-drift));
+  }
+}

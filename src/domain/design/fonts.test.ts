@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { describe, expect, it } from "vitest";
 
-import { FONT_FAMILIES, fontStack, fontStylesheets, registryProblems } from "./fonts";
+import { FONT_FAMILIES, fontStack, fontStylesheets, hasItalic, registryProblems } from "./fonts";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
 const pkg = JSON.parse(readFileSync(`${root}package.json`, "utf8")) as { dependencies: Record<string, string> };
@@ -34,5 +34,18 @@ describe("Schriftregister", () => {
       "@fontsource/zen-kaku-gothic-new/latin-400.css",
       "@fontsource/zen-kaku-gothic-new/latin-700.css",
     ]);
+  });
+});
+
+describe("Kursivschnitte", () => {
+  it("bindet echte Kursive als eigene Datei ein, nur wo das Register sie führt", () => {
+    expect(fontStylesheets("source-serif-4")).toEqual([
+      "@fontsource/source-serif-4/400.css",
+      "@fontsource/source-serif-4/700.css",
+      "@fontsource/source-serif-4/400-italic.css",
+    ]);
+    expect(hasItalic("source-serif-4", 400)).toBe(true);
+    expect(hasItalic("source-serif-4", 700)).toBe(false);
+    expect(hasItalic("vollkorn", 400)).toBe(false);
   });
 });

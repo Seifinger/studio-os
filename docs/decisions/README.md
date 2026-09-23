@@ -8,7 +8,7 @@ neues ADR ersetzt (Status „ersetzt durch 00xx“).
 |---|---|---|
 | [0001](0001-neubau-statt-fork.md) | Neubau statt Fork der Referenzprojekte | angenommen |
 | [0002](0002-tech-stack.md) | Technischer Stack und Versionen | angenommen |
-| [0003](0003-modulgrenzen.md) | Modulgrenzen und ihre Prüfung | angenommen |
+| [0003](0003-modulgrenzen.md) | Modulgrenzen und ihre Prüfung | angenommen, ergänzt durch 0022 |
 | [0004](0004-umgebungsvariablen-und-geheimnisse.md) | Umgebungsvariablen und Geheimnisse | angenommen |
 | [0005](0005-integrationen-ueber-ports.md) | Externe Dienste nur über Ports | angenommen |
 | [0006](0006-health-check.md) | Health-Check `/api/health` | angenommen |
@@ -27,3 +27,4 @@ neues ADR ersetzt (Status „ersetzt durch 00xx“).
 | [0019](0019-design-directions-und-schriften.md) | Design Directions, Schriftregister, Creative Direction, Bildplan | angenommen |
 | [0020](0020-restaurant-komposition-und-beispielseiten.md) | Restaurant-Komposition, Beispielseiten und statischer Export | angenommen |
 | [0021](0021-lead-demos-live-aus-google-places.md) | Lead-Demos live aus Google Places, nur lokal | angenommen |
+| [0022](0022-design-system-narrative-editorial.md) | Design-System-Paket und Basissystem „narrative-editorial“ | angenommen |

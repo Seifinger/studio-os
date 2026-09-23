@@ -5,6 +5,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
+      "@studio/design-system": fileURLToPath(new URL("./packages/design-system/src", import.meta.url)),
       // "server-only" wirft außerhalb des React-Server-Bundles absichtlich einen Fehler.
       // In Unit-Tests laufen Servermodule direkt in Node, daher ein leerer Ersatz.
       "server-only": fileURLToPath(new URL("./tests/support/server-only.ts", import.meta.url)),
@@ -12,7 +13,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["src/**/*.test.{ts,tsx}", "tests/unit/**/*.test.ts"],
+    include: ["src/**/*.test.{ts,tsx}", "packages/*/src/**/*.test.ts", "tests/unit/**/*.test.ts"],
     restoreMocks: true,
     unstubEnvs: true,
   },

@@ -30,6 +30,7 @@ import "@fontsource/zen-kaku-gothic-new/latin-700.css";
 import "@fontsource/rozha-one/400.css";
 import "@fontsource/source-serif-4/400.css";
 import "@fontsource/source-serif-4/700.css";
+import "@fontsource/source-serif-4/400-italic.css";
 import "@fontsource/schibsted-grotesk/400.css";
 import "@fontsource/schibsted-grotesk/800.css";
 import "@fontsource/instrument-serif/400.css";

@@ -1,8 +1,11 @@
 import Link from "next/link";
 
+import { TIFFINSTUBE_RAO_THEME, tiffinstubeRaoProfile } from "@/catalog/narrative-demos/tiffinstube-rao.fixture";
 import { SHOWCASES } from "@/catalog/showcases";
 import { themeStyle } from "@/compositions/restaurant/theme";
 import { cuisineLabel } from "@/domain/gastronomy/cuisines";
+import { themeVariables } from "@studio/design-system/themes/css";
+import { THEME_REGISTRY } from "@studio/design-system/themes/registry";
 
 import styles from "./overview.module.css";
 import { SHOWCASE_CHROME } from "./showcase-model";
@@ -42,6 +45,25 @@ export function ShowcaseOverview() {
           );
         })}
       </ol>
+
+      <section aria-labelledby="erzaehlend" className="mt-16">
+        <h2 id="erzaehlend" className="text-xl font-semibold">
+          Erzählendes Basissystem
+        </h2>
+        <p className="mt-2 max-w-[42rem] text-ink-muted">
+          Die erste Seite im System narrative-editorial: Akte mit Kontrastwechsel, Erzählung vor der Karte, eine
+          Handlung, die mitläuft. Auch dieses Haus ist erfunden.
+        </p>
+        <Link
+          className={`${styles.band} mt-5`}
+          style={{ ...themeVariables(THEME_REGISTRY.get(TIFFINSTUBE_RAO_THEME)), "--c-bg": "var(--ne-night)", "--c-text": "var(--ne-night-ink)", "--c-muted": "var(--ne-night-muted)", "--c-line": "var(--ne-night-primary)", "--c-primary": "var(--ne-focus)", "--f-display": "var(--ne-display-font)", "--w-display": "var(--ne-display-weight)", "--f-body": "var(--ne-text-font)", "--radius": "var(--ne-radius)" } as React.CSSProperties}
+          href="/beispiele/tiffinstube-rao"
+        >
+          <span className={styles.name}>{tiffinstubeRaoProfile.name.value}</span>
+          <span className={styles.meta}>Indisch · {tiffinstubeRaoProfile.locality.value}</span>
+          <span className={styles.mood}>Theme „{THEME_REGISTRY.get(TIFFINSTUBE_RAO_THEME).name}“ – {THEME_REGISTRY.get(TIFFINSTUBE_RAO_THEME).description}</span>
+        </Link>
+      </section>
 
       <footer className="mt-16 border-t border-line pt-6 text-sm text-ink-muted">
         <ul className="flex flex-wrap gap-x-6 gap-y-2">

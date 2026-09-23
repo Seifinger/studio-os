@@ -52,6 +52,7 @@ Chromium nutzen: `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/pfad/zu/chromium npm run test:
 | `/` | Interne Startseite mit technischem Stand (`noindex`) |
 | `/api/health` | Health-Check: `200` + `{"status":"ok",…}` oder `503` + `{"status":"degraded",…}`, nie gecacht |
 | `/beispiele` | Übersicht der 14 erfundenen Beispielhäuser; `/beispiele/<slug>` je Haus |
+| `/beispiele/tiffinstube-rao` | Erste Seite im Basissystem narrative-editorial (Theme „indian-bombay-story“, erfundenes Haus) |
 | `/beispiele/impressum`, `/beispiele/datenschutz` | Rechtstexte der Beispielseiten (Betreiber aus `STUDIO_OPERATOR_*`) |
 | `/demo` | Lead-Demo aus einer Google Place-ID – nur mit `STUDIO_LEAD_DEMOS=local` und über localhost |
 
@@ -84,3 +85,11 @@ In `.env.local` `GOOGLE_PLACES_API_KEY` und `STUDIO_LEAD_DEMOS=local` setzen, `n
 und `http://localhost:3000/demo` öffnen. Die Demo entsteht bei jedem Aufruf aus den aktuellen
 Google-Angaben; gespeichert wird nichts (ADR 0021). Jeder Aufruf ist eine kostenpflichtige
 Enterprise-Anfrage – in der Google Cloud einen Budget-Alarm setzen.
+
+## Design-System (narrative-editorial)
+
+`packages/design-system/` enthält das Basissystem für erzählende Restaurant-Websites (ADR 0022):
+Themes mit Registry (`narrative-editorial-base`, `indian-bombay-story`), die Standard-Komposition,
+das Motion-Profil mit reduzierter Bewegung sowie Bildbriefings und Prompts fürs Moodboard. Die
+Auswertung der Qualitätsreferenz steht in `docs/design-studies/dishoom-analysis.md`; die Referenzbilder
+selbst bleiben lokal unter `references/` (nicht im Repository).

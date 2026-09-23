@@ -171,6 +171,8 @@ Dazu:
 - Umsetzung in der Restaurant-Komposition (ADR 0020): `quiet` ohne Bewegung; `editorial` hebt den Kopf
   des ersten Signature-Abschnitts beim Hineinscrollen an (Scroll-Timeline, Deckkraft nie unter 0,4);
   `expressive` setzt den Namen einmal beim Laden (nur Verschiebung, nie unsichtbar).
+- Ausnahme mit eigenem Profil: das Basissystem narrative-editorial (§12, ADR 0022) erlaubt sechs
+  benannte, scroll-gebundene Effekte mit festen Obergrenzen – nie zeitgesteuert, nie in Schleife.
 
 ## 8. Mobile, Barrierefreiheit, Performance, SEO
 
@@ -279,3 +281,26 @@ Die erste Komposition (`src/compositions/restaurant/`, ADR 0020) setzt die Direc
   Hauptaktion und Anruf/Route; Tippziele ≥ 44 px (E2E).
 - **Ehrliche Demos:** Pflichthinweis oben und im Fuß, gesperrte Formulare mit Begründung, in
   Beispielen keine wählbaren Nummern.
+
+## 12. Basissystem narrative-editorial (ADR 0022)
+
+Qualitätsmaßstab ist eine atmosphärische Restaurant-Website; übernommen werden nur abstrakte
+Prinzipien ([`docs/design-studies/dishoom-analysis.md`](docs/design-studies/dishoom-analysis.md)).
+
+| Prinzip | Umsetzung im System |
+|---|---|
+| Akte statt Abschnitte | Jeder Abschnitt gehört zu `night` oder `paper`; ein Aktwechsel bekommt den großen Abstand `act` |
+| Eine Behauptung im Eingang | Hero: Name, ein Satz (`conceptShort`), zwei Wege; die Hausbehauptung (`usp`) öffnet den hellen Akt |
+| Erzählung vor Karte | Standardsequenz: Eingang → Behauptung → Geschichte → Handwerk → Karte → Raum → Anfrage → Anfahrt → Abschluss |
+| Bilder sind Belege | Bildplätze aus dem Theme, Briefing mit Zweck, Licht, Farbwelt und Alt-Text-Absicht; ohne Foto sichtbar als Aufgabe |
+| Zwei Tonlagen, eine Stimme | Schriftrollen Titel, Text, Label, Bildunterschrift – höchstens drei Familien, echte Kursive |
+| Ein primärer Weg | Überall gleich benannt und mit gleichem Ziel: Eingang, Kopf, mobiles Menü, Leiste, Abschluss (Test) |
+| Ruhige Bewegung mit Zweck | sechs benannte Effekte, alle scroll-gebunden, bei `reduce` aus (Test, E2E) |
+| Mobil zuerst | beide Wege auf dem ersten Bildschirm, Menü als `<details>`, Kategorien und Galerie wischbar und per Tastatur, Leiste erst nach dem Eingang |
+
+**Nicht übernommen** (vollständig in der Studie, §11): Name, Texte, Bilder, Farben, Schriften der
+Referenz; gesperrte Kapitälchen-Titel, gerahmte Archivfotos mit gedrehter Bildunterschrift,
+Ornament-Trenner, Etikett-Karten mit Pfeil, Standortliste über Foto, eingebettete Buchung.
+
+Erstes Küchen-Theme: `indian-bombay-story` – Hausküche und Stadt, gemalte Ladenschrift, Sandstein,
+Messing, Zinnober, Regenabend-Indigo; Klischees stehen in den Ausschlüssen der Bildsprache.
