@@ -48,6 +48,17 @@ describe("Architekturregeln", () => {
     expect(violations).toEqual([]);
   });
 
+  it("Regel 7: catalog enthält nur Daten und importiert nur aus domain", () => {
+    const violations = allSrc
+      .filter((file) => file.relative.startsWith("src/catalog/") && !isTest(file))
+      .flatMap((file) =>
+        importsOf(file.content)
+          .filter((spec) => !/^@\/domain\/|^\.\/|^zod$/.test(spec))
+          .map((spec) => `${file.relative} importiert ${spec}`),
+      );
+    expect(violations).toEqual([]);
+  });
+
   it('Regel 2: jedes Modul in src/server beginnt mit import "server-only"', () => {
     const violations = production
       .filter((file) => file.relative.startsWith("src/server/"))

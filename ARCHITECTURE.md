@@ -45,8 +45,10 @@ src/
 │  ├─ gastronomy/        Restaurant-Ergänzung: Küchen, Speisekarte, Restaurantprofil
 │  ├─ briefing/          Fragenkatalog und offene Punkte
 │  ├─ quality/           Copy-Regeln, Musterkatalog S1–S10, Build-Gate (ADR 0018)
+│  ├─ design/            Design Direction, Creative Direction, Bildplan, Schriftregister (ADR 0019)
 │  ├─ hash/              stabiler Hash für Gleichstände
 │  └─ color/             WCAG-Kontrast
+├─ catalog/              Kuratierte Studio-Daten: Design Directions, Showcase-Betriebe. Importiert nur domain.
 ├─ server/               Nur serverseitig (jede Datei beginnt mit `import "server-only"`).
 │  ├─ env.ts             Einzige Stelle, die process.env liest (Zod-validiert).
 │  ├─ health.ts          Health-Report.

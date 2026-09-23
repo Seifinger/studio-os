@@ -32,6 +32,12 @@ Alle Versionen sind exakt gepinnt (`save-exact=true`). `npm audit` meldet 0 Schw
 | `vitest` | 5.0.1 | Unit-Tests (Vorgabe); bringt `vite` 8 als Peer mit |
 | `@playwright/test` | 1.63.0 | E2E vorbereitet (Vorgabe) |
 
+**Ergänzung 2026-09-23 (ADR 0019): Schriften**
+
+| Pakete | Version | Lizenz | Zweck |
+|---|---|---|---|
+| 24 × `@fontsource/*` (Vollkorn, Alegreya Sans, Cormorant Garamond, Karla, Marcellus, Figtree, Bricolage Grotesque, Work Sans, Reem Kufi, Young Serif, Hanken Grotesk, Chivo, Newsreader, Be Vietnam Pro, Antonio, Zen Kaku Gothic New, Rozha One, Source Serif 4, Schibsted Grotesk, Instrument Serif, Instrument Sans, Libre Caslon Display, Libre Franklin, Fraunces) | 5.3.0 | OFL-1.1 | Selbst gehostete Schriften für Kundenseiten und Demos; reine Daten (woff2 + CSS), kein Code |
+
 ## Bewusst nicht aufgenommen
 
 - **Prettier:** sinnvoll, aber nicht Teil des Auftrags; ESLint + `.editorconfig` reichen für den
