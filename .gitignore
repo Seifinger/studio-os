@@ -1,0 +1,28 @@
+# Abhängigkeiten
+/node_modules
+
+# Next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+*.tsbuildinfo
+
+# Tests
+/coverage
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Umgebungsvariablen: nie committen, nur .env.example
+.env*
+!.env.example
+
+# Hosting
+.vercel
+
+# Sonstiges
+.DS_Store
+*.pem
+npm-debug.log*

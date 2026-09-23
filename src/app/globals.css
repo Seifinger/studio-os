@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+/*
+ * Studio-Token-Set für die funktionale UI (DESIGN.md, Abschnitt 9).
+ * Die Standardfarben von Tailwind sind abgeschaltet: Es gibt nur diese Tokens.
+ * Kontraste und Übereinstimmung mit DESIGN.md prüft src/app/studio-tokens.test.ts.
+ * Kundenseiten bekommen eigene Tokens aus ihrem Designsystem, nie diese.
+ */
+
+:root {
+  color-scheme: light dark;
+  --paper: #f5f3ee;
+  --surface: #fcfbf8;
+  --ink: #1b1a17;
+  --ink-muted: #5a564e;
+  --line: #dcd6ca;
+  --line-strong: #857e71;
+  --accent: #2b5a4b;
+  --on-accent: #ffffff;
+  --ok: #2d6a3e;
+  --fail: #a3321f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #151513;
+    --surface: #1e1d1a;
+    --ink: #ece8df;
+    --ink-muted: #aaa498;
+    --line: #34322d;
+    --line-strong: #7d776b;
+    --accent: #93c8b4;
+    --on-accent: #10201a;
+    --ok: #8fce9c;
+    --fail: #f0a08c;
+  }
+}
+
+@theme {
+  --color-*: initial;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-ok: var(--ok);
+  --color-fail: var(--fail);
+
+  /* System-Schriften: schnell, ohne Netz, ohne Lizenzfrage (docs/decisions/0007). */
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  a:hover {
+    text-decoration-thickness: 2px;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* Bewegungsregel 3: abschaltbar (DESIGN.md, Abschnitt 7). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
