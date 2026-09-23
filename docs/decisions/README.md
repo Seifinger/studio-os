@@ -1,0 +1,19 @@
+# Architekturentscheidungen (ADRs)
+
+Jede nicht-triviale Entscheidung bekommt eine eigene, fortlaufend nummerierte Datei nach
+[`0000-vorlage.md`](0000-vorlage.md). Entscheidungen werden nicht umgeschrieben, sondern durch ein
+neues ADR ersetzt (Status „ersetzt durch 00xx“).
+
+| Nr. | Titel | Status |
+|---|---|---|
+| [0001](0001-neubau-statt-fork.md) | Neubau statt Fork der Referenzprojekte | angenommen |
+| [0002](0002-tech-stack.md) | Technischer Stack und Versionen | angenommen |
+| [0003](0003-modulgrenzen.md) | Modulgrenzen und ihre Prüfung | angenommen |
+| [0004](0004-umgebungsvariablen-und-geheimnisse.md) | Umgebungsvariablen und Geheimnisse | angenommen |
+| [0005](0005-integrationen-ueber-ports.md) | Externe Dienste nur über Ports | angenommen |
+| [0006](0006-health-check.md) | Health-Check `/api/health` | angenommen |
+| [0007](0007-studio-ui-typografie.md) | System-Schriften für die Studio-UI | angenommen |
+| [0008](0008-sprache-in-code-und-doku.md) | Sprache in Code, UI und Dokumentation | angenommen |
+| [0009](0009-abhaengigkeiten.md) | Abhängigkeiten der Foundation | angenommen |
+| [0010](0010-sicherheits-header.md) | Sicherheits-Header, CSP später | angenommen |
+| [0011](0011-widersprueche-der-referenzen.md) | Widersprüchliche Designregeln der Referenzen auflösen | angenommen |
