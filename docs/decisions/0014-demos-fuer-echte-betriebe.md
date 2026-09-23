@@ -1,6 +1,6 @@
 # 0014 – Konzept-Demos für echte Betriebe
 
-- **Status:** angenommen
+- **Status:** angenommen, ergänzt durch ADR 0016 (Demo-Arten, Veröffentlichung)
 - **Datum:** 2026-09-23
 - **Bezug:** ROADMAP.md Stufen 4 und 8; DESIGN.md §3 (T1); MIGRATION.md B16, B17; Produktprinzip 5
 

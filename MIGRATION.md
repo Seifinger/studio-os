@@ -65,7 +65,7 @@ einheitlich löst.
 | # | Befund | Wo | Konsequenz für studio-os |
 |---|---|---|---|
 | B1 | **Drei parallele Seiten-Engines** (v1-Generator, v2-Builder + Komposition, v3-Composer/Renderer), alle HTML per String-Konkatenation | beide Repos | Eine Engine: React Server Components. Keine HTML-Strings. |
-| B2 | **Zwei Provenienzmodelle**: v2 `bestaetigt/uebernommen/vorschlag/unbekannt` mit `quelle`; v3 `confirmed/draft/unknown`. v3-`DECISIONS.md` widerspricht sich selbst bei der Abbildung von `uebernommen` (einmal → `confirmed`, später „alles → `draft`“) | `v2/briefing/briefing.js`, `gastro-v3/src/briefing`, `gastro-v3/DECISIONS.md` | Ein Modell mit vier Zuständen + Quelle + Zeitstempel (siehe K1). Die Abbildung wird einmal festgelegt und getestet. |
+| B2 | **Zwei Provenienzmodelle**: v2 `bestaetigt/uebernommen/vorschlag/unbekannt` mit `quelle`; v3 `confirmed/draft/unknown`. v3-`DECISIONS.md` widerspricht sich selbst bei der Abbildung von `uebernommen` (einmal → `confirmed`, später „alles → `draft`“) | `v2/briefing/briefing.js`, `gastro-v3/src/briefing`, `gastro-v3/DECISIONS.md` | Ein Modell mit fünf Zuständen (die vier aus v2 plus `fiktiv`) + Quelle + Datum; umgesetzt in Stufe 1 (ADR 0015). |
 | B3 | **Lead-Scoring doppelt** mit abweichender Semantik: v1 setzt bei unerreichbarer Website `score: 0` + „Zu prüfen“, v3 `score: null`. Stichwortlisten unterschiedlich lang (v1: 13/11, v3: 6/7) | `src/scoring.js`, `src/websiteAnalyzer.js` vs. `dashboard/prospect-server.js` | v3-Semantik (`null` statt geratener Zahl) + v1-Stichwortlisten, eine Implementierung. |
 | B4 | **Google-Places-Client dreifach** (v1 `placesClient.js`, v3 `prospect-server.js`, v3 `lead-finder-server.js` – letzterer „nicht mehr verdrahtet“) | beide Repos | Genau ein Adapter hinter einem Port. |
 | B5 | **Wirt-Datenhaltung doppelt**: v1 `betriebStore.js`, v3 `src/wirt/store.js` („Adaption“ davon), beide JSON-Dateien je Betrieb | beide Repos | Neu mit Datenbank im geplanten Dashboard-Schritt; die Fachregeln (Kapazität, Tische, No-Show) werden als reine Funktionen mit den Referenztests als Spezifikation übernommen. |
@@ -108,6 +108,7 @@ Spezifikation dienen.
 | K16 | **Deterministische Auswahl** (gleicher Betrieb → gleiche Ausgabe, stabiler Hash statt `Math.random()`) | `gastro-v3/src/composer/index.js` (`seedHash`) | `src/domain` bei Bedarf | Nur für Gleichstände zwischen *begründeten* Optionen, nie als Gestaltungsquelle (B12). |
 | K17 | **Screenshot-Review mit Zuständen** (mobile Navigation, Formularfehler, Bestätigung, Warenkorb) und Prüfungen (Überläufe, Touch-Ziele, Fokus, CLS) | `v2/judge/screenshotReview.js` | Playwright-Suite (später) | Prüft, was Menschen wirklich sehen. |
 | K18 | **Rechtliche Leitplanken** als Wissen: Google-Places-Nutzungsbedingungen, § 7 UWG (keine Werbe-Mails), keine Rezensionstexte speichern, Beispielseiten kennzeichnen, `noindex` für Entwürfe | READMEs beider Repos, `GOOGLE-LEADS.md` | ARCHITECTURE.md, CLAUDE.md | Kostet nichts, verhindert teure Fehler. |
+| K20 | **Küchen-Vorschlag aus dem Betriebsnamen** (Stichwortregeln, Reihenfolge spezielle vor Sammelküchen) | `src/menuCatalog.js` (`detectCuisine`), `test/menuCatalog.test.js` | `src/domain/gastronomy/cuisines.ts` ✅ | Für personalisierte Lead-Demos nötig; neu mit Wortanfang-Treffern, ohne Standardwert, immer als Vorschlag (ADR 0017). |
 | K19 | **Lokal gehostete Schriften** (45 OFL-Familien, subsettiert latin/latin-ext) | `v2/output/assets/fonts/`, `v2/build/schriften.js` | Schriftregister mit Lizenznachweis (später) | Nicht die Binärdateien kopieren, sondern je Schrift aus der Originalquelle mit Lizenz neu beziehen. |
 
 ## 4. Bewusst nicht übernommen
@@ -171,7 +172,7 @@ Zuordnung der Kandidaten zu den ROADMAP-Stufen:
 | ROADMAP-Stufe | Kandidaten |
 |---|---|
 | 0 · Foundation ✅ | K6 (Kontrast für die Studio-Tokens) |
-| 1 · Fachkern und Content-Modell | K1, K2, K16 |
+| 1 · Fachkern und Content-Modell ✅ | K1, K2, K16, K20 |
 | 2 · Inhaltsqualität | K7, K8, K18 |
 | 3 · Design Directions und Art Direction | K9, K10, K11, K12, K19 |
 | 4 · Referenzprojekt: erste Kundenseite | K17 |

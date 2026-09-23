@@ -67,7 +67,9 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
 - Jedes Modul in `src/server` (außer Tests) beginnt mit `import "server-only";`.
 - **Keine erfundenen Betriebsfakten** in Demos oder Kundenseiten (Öffnungszeiten, Preise, Gerichte,
   Geschichte, Stimmen, Bewertungen). Fiktive Beispielbetriebe sind sichtbar als „Beispiel – frei
-  erfunden“ gekennzeichnet und `noindex`.
+  erfunden“ gekennzeichnet und `noindex`; ihre Angaben tragen den Status `fiktiv`.
+- Betriebsangaben erscheinen auf Seiten nur über das Fakten-Gate (`src/domain/provenance/gate.ts`);
+  kein Rendering an ihm vorbei.
 - Google-Places-Daten: dauerhaft nur Place-ID + eigene Analyse + unabhängig erhobene Angaben mit
   Quelle; alle anderen Places-Inhalte nie speichern, sondern live abrufen und mit Google-Logo zeigen.
   Nur die Field Masks aus `places-fields.ts`; keine Rezensionen, keine Google-Fotos (ADR 0013).

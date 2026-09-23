@@ -3,8 +3,9 @@
 Technische Grundlage eines KI-unterstützten Website-Studios für lokale Betriebe. Erster Markt:
 Restaurants; später Hotels, Handwerk, Beauty, Fitness und lokale Dienstleister.
 
-**Stand: Foundation (Stufe 0 von 10).** Es gibt eine interne Startseite, einen Health-Check und die
-verbindlichen Grundlagen. Fachfunktionen folgen schrittweise nach [`ROADMAP.md`](ROADMAP.md); bis zur
+**Stand: Stufe 1 von 10.** Foundation (Startseite, Health-Check, Grundlagen) und der Fachkern ohne
+Oberfläche: Angaben mit Herkunft, Fakten-Gate für Beispiel-, Lead-Demo- und Kundenseiten,
+Betriebs-/Restaurantprofil, Speisekarte, Öffnungszeiten, Aktionen. Fachfunktionen folgen schrittweise nach [`ROADMAP.md`](ROADMAP.md); bis zur
 Lead-Recherche in Stufe 8 bleibt `gastro-v3` das Vertriebswerkzeug.
 
 > Ein gemeinsames System im Hintergrund, aber für den Kunden immer eine eigenständige Website.

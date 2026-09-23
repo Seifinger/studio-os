@@ -30,7 +30,7 @@ export default function HomePage() {
     <main id="inhalt" className="mx-auto max-w-[44rem] px-6 pb-24 pt-16 sm:pt-24">
       <header className="border-b border-line pb-10">
         <p className="font-mono text-sm text-ink-muted">
-          studio-os · Version {APP_VERSION} · Foundation
+          studio-os · Version {APP_VERSION} · Stufe 1
         </p>
         <h1 className="mt-4 text-[2.5rem] font-semibold leading-[1.1] tracking-tight">Studio OS</h1>
         <p className="mt-6 max-w-[34rem] text-xl leading-relaxed text-ink-muted">
@@ -50,7 +50,10 @@ export default function HomePage() {
               /api/health
             </a>
           </StatusRow>
-          <StatusRow term="Fachlogik">Noch keine. Nächste Stufe laut ROADMAP.md: Fachkern und Content-Modell</StatusRow>
+          <StatusRow term="Fachkern">
+            Angaben mit Herkunft, Fakten-Gate, Betriebs- und Restaurantprofil (ohne Oberfläche). Nächste
+            Stufe laut ROADMAP.md: Regeln gegen KI-Floskeln
+          </StatusRow>
           <StatusRow term="Integrationen">
             Google Places und E-Mail als Schnittstellen vorbereitet, alle abgeschaltet. Weitere Dienste
             sind in ARCHITECTURE.md geplant

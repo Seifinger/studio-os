@@ -40,6 +40,12 @@ src/
 ├─ app/                  Routing und Seitenhülle (Next.js). Dünn: liest Daten über server/, rendert ui/ oder compositions/.
 │  └─ api/               Route Handlers (öffentliche und interne HTTP-Schnittstellen)
 ├─ domain/               Fachkern. Reines TypeScript + Zod. Kein I/O, kein React, kein Next, kein process.env.
+│  ├─ provenance/        Angaben mit Herkunft, Fakten-Gate, Seiten-Pflichten (ADR 0015)
+│  ├─ content/           Betriebsprofil, Telefon, Preise, Öffnungszeiten, Buchungslinks, Aktionen (ADR 0017)
+│  ├─ gastronomy/        Restaurant-Ergänzung: Küchen, Speisekarte, Restaurantprofil
+│  ├─ briefing/          Fragenkatalog und offene Punkte
+│  ├─ hash/              stabiler Hash für Gleichstände
+│  └─ color/             WCAG-Kontrast
 ├─ server/               Nur serverseitig (jede Datei beginnt mit `import "server-only"`).
 │  ├─ env.ts             Einzige Stelle, die process.env liest (Zod-validiert).
 │  ├─ health.ts          Health-Report.
@@ -122,10 +128,13 @@ Bewertungen, Fotos) trägt einen Status:
 | `bestaetigt` | vom Betrieb bestätigt | ja |
 | `uebernommen` | aus einer benannten, unabhängigen Quelle übernommen (Website des Betriebs, Aushang, Speisekarte vor Ort – mit Datum). Google-Places-Inhalte werden nicht gespeichert, nur live mit Google-Logo angezeigt (ADR 0013) | ja, sofern die Quelle die Anzeige erlaubt |
 | `vorschlag` | Vorschlag des Studios oder einer KI | nur in der Vorschau, sichtbar als Entwurf markiert; blockiert die Veröffentlichung |
-| `unbekannt` | liegt nicht vor | nie |
+| `unbekannt` | liegt nicht vor | nie (in Demos und Vorschauen als erkennbarer Platzhalter) |
+| `fiktiv` | erfunden | nur auf Beispielseiten fiktiver Betriebe (`showcase`) |
 
-Kompositionen lesen Betriebsangaben ausschließlich über dieses Gate (Umsetzung: Stufe 1, siehe
-MIGRATION.md K1). Fehlen Pflichtangaben, meldet der Build „unvollständig“ mit Begründung, statt
+Wie das Gate je Seitenart entscheidet (Beispielbetrieb, Lead-Demo, Kundenvorschau, live), steht als
+vollständige Tabelle in ADR 0015 und ist in `src/domain/provenance/gate.ts` umgesetzt.
+
+Kompositionen lesen Betriebsangaben ausschließlich über dieses Gate (umgesetzt in Stufe 1). Fehlen Pflichtangaben, meldet der Build „unvollständig“ mit Begründung, statt
 Füllinhalt zu erzeugen.
 
 ### 4.3 Anfragen und Betrieb (später, in drei Phasen)
@@ -205,6 +214,7 @@ voraus. Die Umgebungsvariablen sind in `src/server/env.ts` bereits als *optional
 |---|---|---|---|---|---|
 | Resend | Reservierungs- und Abhol-Anfragen, Eingangsbestätigungen, Systemmails | `EmailSenderPort` (Typ vorhanden) | `RESEND_API_KEY`, `EMAIL_FROM` | 5 | Free-Tier vorhanden; Absenderdomain verifizieren. |
 | Externe Buchungssysteme (Resmio, OpenTable, Quandoo …), WhatsApp | Vorhandene Reservierungswege des Betriebs einbinden | zunächst nur Links im Content-Modell | – | 1 (Modell), 5 (Seite) | Keine Einbettung fremder Skripte ohne ADR (Datenschutz, Performance). |
+| GitHub Pages | Statische Demo-Seiten (Showcase; Lead-Demos siehe ADR 0016) | – (Export + Deploy-Workflow, Stufe 4) | – | 4 | Kostenlos nur aus öffentlichem Repository; Seiten immer öffentlich; nicht für Kundenseiten. |
 | Vercel | Hosting, Preview-URLs für Demos, Custom Domains; später automatisierte Deployments je Kunde | `DeploymentPort` (entsteht bei Bedarf) | `VERCEL_TOKEN` (erst mit Automatisierung) | 4 (Previews), 6 (live) | Hobby-Tarif laut Vercel nur für nicht-kommerzielle Nutzung → vor dem ersten Live-Kunden Pro. Die App bleibt auf jedem Node-Host lauffähig. |
 | Cloudflare | Domains, DNS, TLS | – (manuell, später ggf. Port) | – | 6 | Gering; Domain gehört idealerweise dem Kunden. |
 | Sentry | Fehlertracking (Formulare, API-Fehler) | `ErrorReporter` (entsteht mit Stufe 6) | (Stufe 6) | 6 | Free-Tier; EU, ohne Session-Replay, PII-Filter. |
