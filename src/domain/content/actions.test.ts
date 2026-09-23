@@ -94,6 +94,29 @@ describe("resolveAction ohne Angaben", () => {
   });
 });
 
+describe("Beispielbetriebe", () => {
+  const fictional = <T>(value: T): Fact<T> => ({ status: "fiktiv", value });
+  const showcase: ActionSources = {
+    ...empty,
+    phone: fictional(phone),
+    address: fictional(address),
+    onlineBooking: fictional({ provider: "other" as const, url: "https://reservierung.beispiel.example" }),
+  };
+
+  it.each(["call", "directions", "onlineBooking"] as const)("%s führt zur Besuchs-Sektion statt nach außen", (type) => {
+    expect(resolveAction(type, showcase, { kind: "showcase" })).toMatchObject({
+      available: true,
+      href: "#besuch",
+      external: false,
+      demoOnly: true,
+    });
+  });
+
+  it("bleibt ohne Angabe auch im Beispiel unverfügbar", () => {
+    expect(resolveAction("whatsapp", showcase, { kind: "showcase" }).available).toBe(false);
+  });
+});
+
 describe("Vorschläge", () => {
   it("sind in der Vorschau als Entwurf markiert und live nicht verfügbar", () => {
     const sources = { ...complete, phone: proposed(phone) };

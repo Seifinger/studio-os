@@ -39,6 +39,8 @@ export const creativeDirectionSchema = z
           section: z.enum(SECTION_IDS),
           weight: z.enum(["gross", "normal", "klein"]),
           why: sentence(200),
+          /** Eigene Abschnittsüberschrift statt Standard-H2 (DESIGN.md T4). */
+          title: z.string().trim().min(2).max(60).optional(),
         }),
       )
       .min(3),

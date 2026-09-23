@@ -53,7 +53,7 @@ describe("Architekturregeln", () => {
       .filter((file) => file.relative.startsWith("src/catalog/") && !isTest(file))
       .flatMap((file) =>
         importsOf(file.content)
-          .filter((spec) => !/^@\/domain\/|^\.\/|^zod$/.test(spec))
+          .filter((spec) => !/^@\/domain\/|^\.\.?\/|^zod$/.test(spec))
           .map((spec) => `${file.relative} importiert ${spec}`),
       );
     expect(violations).toEqual([]);

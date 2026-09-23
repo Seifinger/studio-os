@@ -9,12 +9,14 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export:showcases": "node scripts/export-showcases.mjs",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "check:export": "vitest run --config vitest.export.config.mts",
     "check": "npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {

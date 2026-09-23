@@ -67,7 +67,16 @@ const ATMOSPHERE_FIELDS: ReadonlySet<string> = new Set([
 
 const TIER_ORDER: readonly PlacesSkuTier[] = ["essentials", "pro", "enterprise", "enterpriseAtmosphere"];
 
-function tierOfField(field: string): PlacesSkuTier {
+/** Place Details schreibt Felder ohne "places."-Präfix; die Stufen sind dieselben. */
+const normalize = (field: string) => (field === "nextPageToken" || field.startsWith("places.") ? field : `places.${field}`);
+
+/** Verboten, egal ob mit oder ohne Präfix geschrieben. */
+export function isForbiddenPlacesField(field: string): boolean {
+  return FORBIDDEN_PLACES_FIELDS.has(field) || FORBIDDEN_PLACES_FIELDS.has(normalize(field));
+}
+
+function tierOfField(raw: string): PlacesSkuTier {
+  const field = normalize(raw);
   if (ESSENTIALS_FIELDS.has(field)) return "essentials";
   if (ENTERPRISE_FIELDS.has(field)) return "enterprise";
   if (ATMOSPHERE_FIELDS.has(field) || ATMOSPHERE_PREFIXES.some((prefix) => field.startsWith(prefix))) {
@@ -109,4 +118,34 @@ export type PlacesSearchPurpose = keyof typeof TEXT_SEARCH_FIELD_MASKS;
 /** Wert für den Header `X-Goog-FieldMask`. */
 export function fieldMaskHeader(purpose: PlacesSearchPurpose): string {
   return TEXT_SEARCH_FIELD_MASKS[purpose].join(",");
+}
+
+// Field Masks für Place Details (New) – ohne "places."-Präfix. Quelle der Stufen:
+// developers.google.com/maps/documentation/places/web-service/place-details (abgerufen 2026-09-23).
+export const PLACE_DETAILS_FIELD_MASKS = {
+  /**
+   * Lead-Demo (ADR 0021): dieselbe Datenlage wie die Lead-Suche aus gastro-webagentur und
+   * gastro-v3 (Name, Adresse, Telefon, Website, Bewertung), ergänzt um Öffnungszeiten,
+   * strukturierte Adresse und Typ. Alles Enterprise – Zusatzfelder kosten in der Stufe nichts extra.
+   */
+  leadDemo: [
+    "id",
+    "displayName",
+    "formattedAddress",
+    "postalAddress",
+    "businessStatus",
+    "primaryType",
+    "types",
+    "nationalPhoneNumber",
+    "websiteUri",
+    "rating",
+    "userRatingCount",
+    "regularOpeningHours",
+  ],
+} as const satisfies Record<string, readonly string[]>;
+
+export type PlaceDetailsPurpose = keyof typeof PLACE_DETAILS_FIELD_MASKS;
+
+export function detailsFieldMaskHeader(purpose: PlaceDetailsPurpose): string {
+  return PLACE_DETAILS_FIELD_MASKS[purpose].join(",");
 }

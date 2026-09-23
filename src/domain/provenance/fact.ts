@@ -58,11 +58,21 @@ export const sourceSchema = z
 
 export type Source = z.infer<typeof sourceSchema>;
 
+/**
+ * Nur im Speicher: Angaben, die beim Anzeigen live aus Google Places kommen (Lead-Demos, ADR 0021).
+ * Das Speicher-Schema kennt diese Quellart nicht – sie kann nie in einem Profil landen.
+ */
+export type LiveSource = { readonly kind: "googlePlacesLive"; readonly placeId: string; readonly retrievedAt: string };
+
+export function isLiveSource(source: Source | LiveSource): source is LiveSource {
+  return source.kind === "googlePlacesLive";
+}
+
 const recordedAt = z.iso.date({ error: "Datum im Format JJJJ-MM-TT" });
 
 export type Fact<T> =
   | { readonly status: "bestaetigt"; readonly value: T; readonly source: Source; readonly recordedAt: string }
-  | { readonly status: "uebernommen"; readonly value: T; readonly source: Source; readonly recordedAt: string }
+  | { readonly status: "uebernommen"; readonly value: T; readonly source: Source | LiveSource; readonly recordedAt: string }
   | { readonly status: "vorschlag"; readonly value: T; readonly by: "studio" | "ki"; readonly note?: string | undefined }
   | { readonly status: "unbekannt"; readonly value: null }
   | { readonly status: "fiktiv"; readonly value: T };

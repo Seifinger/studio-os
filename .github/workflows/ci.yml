@@ -29,3 +29,41 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  # Statischer Export der Beispielseiten mit Platzhalter-Betreiberangaben: prüft, dass Export und
+  # Veröffentlichungsprüfung funktionieren. Dieses Ergebnis wird nie veröffentlicht (ADR 0020).
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      STUDIO_OPERATOR_NAME: "CI-Prüfung"
+      STUDIO_OPERATOR_ADDRESS: "Nicht veröffentlichen 1, 00000 Nirgendwo"
+      STUDIO_OPERATOR_EMAIL: "ci@example.com"
+      SHOWCASE_BASE_PATH: "/studio-demos"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run export:showcases
+      - run: npm run check:export
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run test:e2e

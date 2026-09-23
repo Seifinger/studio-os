@@ -1,6 +1,8 @@
 import "server-only";
 
-import type { PlacesSearchPurpose } from "./places-fields";
+import type { PlaceData } from "@/domain/leads/place-profile";
+
+import type { PlaceDetailsPurpose, PlacesSearchPurpose } from "./places-fields";
 
 // Ports für externe Dienste (ARCHITECTURE.md, Abschnitt 6).
 // In der Foundation existieren nur die Verträge, keine Implementierung und keine SDKs.
@@ -59,6 +61,14 @@ export type PlaceCandidate = {
 
 export interface PlacesSearchPort {
   searchText(query: PlacesTextQuery): Promise<readonly PlaceCandidate[]>;
+}
+
+/**
+ * Place Details live abrufen – nie speichern, nur anzeigen (Lead-Demos, ADR 0021).
+ * `null`, wenn Google die Place-ID nicht kennt.
+ */
+export interface PlaceDetailsPort {
+  getDetails(placeId: string, purpose: PlaceDetailsPurpose): Promise<PlaceData | null>;
 }
 
 /* ---------- Transaktionale E-Mail (z. B. Resend) – Stufe 5 ---------- */

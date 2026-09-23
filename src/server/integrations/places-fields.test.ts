@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  detailsFieldMaskHeader,
   fieldMaskHeader,
   FORBIDDEN_PLACES_FIELDS,
+  isForbiddenPlacesField,
+  PLACE_DETAILS_FIELD_MASKS,
   skuTierOf,
   TEXT_SEARCH_FIELD_MASKS,
 } from "./places-fields";
@@ -49,5 +52,28 @@ describe("skuTierOf", () => {
   it("stuft Fotos als Pro ein – deshalb verbietet eine eigene Liste sie", () => {
     expect(skuTierOf(["places.photos"])).toBe("pro");
     expect(FORBIDDEN_PLACES_FIELDS.has("places.photos")).toBe(true);
+  });
+});
+
+describe("PLACE_DETAILS_FIELD_MASKS", () => {
+  it("fordert für Lead-Demos keine Fotos, Rezensionen oder Zusammenfassungen an", () => {
+    expect(PLACE_DETAILS_FIELD_MASKS.leadDemo.filter((field) => isForbiddenPlacesField(field))).toEqual([]);
+    for (const field of PLACE_DETAILS_FIELD_MASKS.leadDemo) expect(field).toMatch(/^[a-zA-Z]+$/);
+  });
+
+  it("erkennt verbotene Felder auch ohne Präfix", () => {
+    expect(isForbiddenPlacesField("photos")).toBe(true);
+    expect(isForbiddenPlacesField("reviews")).toBe(true);
+    expect(isForbiddenPlacesField("places.editorialSummary")).toBe(true);
+    expect(isForbiddenPlacesField("displayName")).toBe(false);
+  });
+
+  it("bleibt in der Enterprise-Stufe wie die Lead-Suche – keine Atmosphere-Felder", () => {
+    expect(skuTierOf(PLACE_DETAILS_FIELD_MASKS.leadDemo)).toBe("enterprise");
+    expect(skuTierOf([...PLACE_DETAILS_FIELD_MASKS.leadDemo, "takeout"])).toBe("enterpriseAtmosphere");
+  });
+
+  it("baut den Header ohne Präfix", () => {
+    expect(detailsFieldMaskHeader("leadDemo").startsWith("id,displayName,")).toBe(true);
   });
 });

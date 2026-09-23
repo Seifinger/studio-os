@@ -1,0 +1,41 @@
+// Schriftdateien aller Directions (Schriftregister src/domain/design/fonts.ts, ADR 0019/0020).
+// Der Browser lädt nur die woff2-Dateien, die eine Seite wirklich verwendet; hier stehen nur die
+// @font-face-Regeln. Ein Test hält diese Liste und das Register deckungsgleich.
+import "@fontsource/vollkorn/400.css";
+import "@fontsource/vollkorn/700.css";
+import "@fontsource/alegreya-sans/400.css";
+import "@fontsource/alegreya-sans/700.css";
+import "@fontsource/cormorant-garamond/500.css";
+import "@fontsource/cormorant-garamond/600.css";
+import "@fontsource/karla/400.css";
+import "@fontsource/karla/700.css";
+import "@fontsource/marcellus/400.css";
+import "@fontsource/figtree/400.css";
+import "@fontsource/figtree/700.css";
+import "@fontsource/bricolage-grotesque/800.css";
+import "@fontsource/work-sans/400.css";
+import "@fontsource/work-sans/700.css";
+import "@fontsource/reem-kufi/600.css";
+import "@fontsource/young-serif/400.css";
+import "@fontsource/hanken-grotesk/400.css";
+import "@fontsource/hanken-grotesk/700.css";
+import "@fontsource/chivo/400.css";
+import "@fontsource/chivo/800.css";
+import "@fontsource/newsreader/500.css";
+import "@fontsource/be-vietnam-pro/400.css";
+import "@fontsource/be-vietnam-pro/700.css";
+import "@fontsource/antonio/700.css";
+import "@fontsource/zen-kaku-gothic-new/latin-400.css";
+import "@fontsource/zen-kaku-gothic-new/latin-700.css";
+import "@fontsource/rozha-one/400.css";
+import "@fontsource/source-serif-4/400.css";
+import "@fontsource/source-serif-4/700.css";
+import "@fontsource/schibsted-grotesk/400.css";
+import "@fontsource/schibsted-grotesk/800.css";
+import "@fontsource/instrument-serif/400.css";
+import "@fontsource/instrument-sans/400.css";
+import "@fontsource/instrument-sans/700.css";
+import "@fontsource/libre-caslon-display/400.css";
+import "@fontsource/libre-franklin/400.css";
+import "@fontsource/libre-franklin/700.css";
+import "@fontsource/fraunces/600.css";

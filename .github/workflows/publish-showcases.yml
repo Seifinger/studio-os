@@ -1,0 +1,58 @@
+name: publish-showcases
+
+# Veröffentlicht die Beispielseiten auf GitHub Pages (ADR 0016, 0020) – nur von Hand ausgelöst.
+# Voraussetzungen (einmalig, siehe README „Beispielseiten veröffentlichen“):
+# - öffentliches Repository für die Seiten, z. B. Seifinger/studio-demos, mit GitHub Pages aus "main"
+# - Deploy-Key mit Schreibrecht dort, privater Teil hier als Secret DEMOS_DEPLOY_KEY
+# - Variablen DEMOS_REPOSITORY (z. B. "Seifinger/studio-demos") und SHOWCASE_BASE_PATH ("/studio-demos")
+# - Secrets STUDIO_OPERATOR_NAME, STUDIO_OPERATOR_ADDRESS, STUDIO_OPERATOR_EMAIL (Impressum)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-showcases
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      SHOWCASE_BASE_PATH: ${{ vars.SHOWCASE_BASE_PATH }}
+      STUDIO_OPERATOR_NAME: ${{ secrets.STUDIO_OPERATOR_NAME }}
+      STUDIO_OPERATOR_ADDRESS: ${{ secrets.STUDIO_OPERATOR_ADDRESS }}
+      STUDIO_OPERATOR_EMAIL: ${{ secrets.STUDIO_OPERATOR_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run export:showcases
+      # Ohne bestandene Prüfung wird nichts veröffentlicht.
+      - run: npm run check:export
+      - name: Nach GitHub Pages übertragen
+        env:
+          DEPLOY_KEY: ${{ secrets.DEMOS_DEPLOY_KEY }}
+          TARGET_REPOSITORY: ${{ vars.DEMOS_REPOSITORY }}
+        run: |
+          test -n "$DEPLOY_KEY" || { echo "Secret DEMOS_DEPLOY_KEY fehlt"; exit 1; }
+          test -n "$TARGET_REPOSITORY" || { echo "Variable DEMOS_REPOSITORY fehlt"; exit 1; }
+          install -m 600 /dev/null "$RUNNER_TEMP/deploy_key"
+          printf '%s\n' "$DEPLOY_KEY" > "$RUNNER_TEMP/deploy_key"
+          export GIT_SSH_COMMAND="ssh -i $RUNNER_TEMP/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
+          cd out
+          git init -q -b main
+          git config user.name "studio-os"
+          git config user.email "studio-os@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Beispielseiten aus studio-os ${GITHUB_SHA::7}"
+          # Das Zielrepository enthält nur den Export – jede Veröffentlichung ersetzt ihn vollständig.
+          git push -q --force "git@github.com:${TARGET_REPOSITORY}.git" main

@@ -26,6 +26,7 @@ export const ACTION_ANCHORS = {
   tableRequest: "#tisch-anfragen",
   pickupRequest: "#abholung-anfragen",
   menu: "#speisekarte",
+  visit: "#besuch",
 } as const;
 
 export type ActionSources = {
@@ -78,20 +79,28 @@ export function resolveAction(type: ActionType, sources: ActionSources, context:
   });
   const unavailable = (reason: string): ResolvedAction => ({ available: false, type, reason });
 
+  // Beispielbetriebe sind erfunden: Nummern, Adressen und Buchungslinks führen nirgendwohin.
+  // Die Aktion bleibt sichtbar und springt zur Besuchs-Sektion der Seite.
+  const showcaseStandIn = (): ResolvedAction => available(ACTION_ANCHORS.visit, false, false, true);
+
   switch (type) {
     case "call": {
+      if (context.kind === "showcase") return usable(sources.phone, context) ? showcaseStandIn() : unavailable("Keine Telefonnummer");
       const phone = usable(sources.phone, context);
       return phone ? available(telHref(phone.value), false, phone.draft) : unavailable("Keine freigegebene Telefonnummer");
     }
     case "whatsapp": {
+      if (context.kind === "showcase") return usable(sources.whatsapp, context) ? showcaseStandIn() : unavailable("Keine WhatsApp-Nummer");
       const phone = usable(sources.whatsapp, context);
       return phone ? available(whatsAppHref(phone.value), true, phone.draft) : unavailable("Keine freigegebene WhatsApp-Nummer");
     }
     case "directions": {
+      if (context.kind === "showcase") return usable(sources.address, context) ? showcaseStandIn() : unavailable("Keine Adresse");
       const address = usable(sources.address, context);
       return address ? available(mapsHref(address.value), true, address.draft) : unavailable("Keine freigegebene Adresse");
     }
     case "onlineBooking": {
+      if (context.kind === "showcase") return usable(sources.onlineBooking, context) ? showcaseStandIn() : unavailable("Kein Reservierungssystem");
       const booking = usable(sources.onlineBooking, context);
       if (!booking) return unavailable("Kein Reservierungssystem hinterlegt");
       const provider = BOOKING_PROVIDERS.find((candidate) => candidate.id === booking.value.provider);
