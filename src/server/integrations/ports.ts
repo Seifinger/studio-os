@@ -1,10 +1,12 @@
 import "server-only";
 
+import type { PlacesSearchPurpose } from "./places-fields";
+
 // Ports für externe Dienste (ARCHITECTURE.md, Abschnitt 6).
 // In der Foundation existieren nur die Verträge, keine Implementierung und keine SDKs.
 // Adapter implementieren diese Schnittstellen; Tests ersetzen sie durch Fakes.
 // Weitere Ports (Datenbank-Repositories, Deployment, KI, Benachrichtigung) entstehen mit
-// der jeweiligen Stufe aus MIGRATION.md, nicht auf Vorrat.
+// der jeweiligen Stufe aus ROADMAP.md, nicht auf Vorrat.
 
 export type IntegrationName = "googlePlaces" | "supabase" | "resend" | "vercel" | "anthropic";
 
@@ -19,11 +21,13 @@ export class IntegrationNotConfiguredError extends Error {
   }
 }
 
-/* ---------- Google Places API (New) – Stufe 5 ---------- */
+/* ---------- Google Places API (New) – Stufe 8 ---------- */
 
 export type PlacesTextQuery = {
   /** Freitext, z. B. "Restaurants in Mühldorf am Inn". */
   readonly text: string;
+  /** Bestimmt die Field Mask und damit Kosten und Datenumfang (places-fields.ts, ADR 0013). */
+  readonly purpose: PlacesSearchPurpose;
   /** Höchstens 20 je Anfrage (Limit der Textsuche). */
   readonly maxResults: number;
   readonly languageCode?: string;
@@ -31,19 +35,25 @@ export type PlacesTextQuery = {
 };
 
 /**
- * Ein Suchtreffer. Flüchtig: Dauerhaft gespeichert werden darf nur `placeId`,
- * alle anderen Felder nur mit Ablaufdatum (ARCHITECTURE.md, Abschnitt 5).
- * Bewusst ohne Fotos und Rezensionstexte.
+ * Ein Suchtreffer – nur für die Anzeige. Dauerhaft gespeichert werden darf ausschließlich
+ * `placeId`; alles andere wird beim erneuten Anzeigen live abgerufen und mit Google-Logo
+ * gezeigt (ADR 0013). Bewusst ohne Fotos und Rezensionen.
+ * Felder der Enterprise-Stufe sind `null`, wenn der Zweck sie nicht anfordert.
  */
 export type PlaceCandidate = {
   readonly placeId: string;
-  readonly displayName: string;
+  readonly displayName: string | null;
   readonly formattedAddress: string | null;
-  readonly nationalPhoneNumber: string | null;
+  /** z. B. "OPERATIONAL", "CLOSED_PERMANENTLY" */
+  readonly businessStatus: string | null;
+  /** Enterprise – nur bei `leadSearch`. */
   readonly websiteUri: string | null;
+  /** Enterprise – nur bei `leadSearch`. */
+  readonly nationalPhoneNumber: string | null;
+  /** Enterprise – nur bei `leadSearch`. */
   readonly rating: number | null;
+  /** Enterprise – nur bei `leadSearch`. */
   readonly userRatingCount: number | null;
-  /** Zeitpunkt des Abrufs – Grundlage für das Ablaufdatum. */
   readonly retrievedAt: Date;
 };
 
@@ -51,7 +61,7 @@ export interface PlacesSearchPort {
   searchText(query: PlacesTextQuery): Promise<readonly PlaceCandidate[]>;
 }
 
-/* ---------- Transaktionale E-Mail (z. B. Resend) – Stufe 7 ---------- */
+/* ---------- Transaktionale E-Mail (z. B. Resend) – Stufe 5 ---------- */
 
 export type OutboundEmail = {
   readonly to: readonly string[];
