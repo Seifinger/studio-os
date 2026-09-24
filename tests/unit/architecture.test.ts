@@ -84,6 +84,17 @@ describe("Architekturregeln", () => {
     expect(violations).toEqual([]);
   });
 
+  it("Regel 10: nur Seiten mit Anfrage-Endpunkt importieren das scharfe Formular (kein Formular-JavaScript auf Beispielseiten)", () => {
+    const violations = production
+      .filter((file) => file.relative.startsWith("src/compositions/") && !file.relative.endsWith("/shared/live-request-form.tsx"))
+      .flatMap((file) =>
+        importsOf(file.content)
+          .filter((spec) => /live-request-form$/.test(spec))
+          .map((spec) => `${file.relative} importiert ${spec}`),
+      );
+    expect(violations).toEqual([]);
+  });
+
   it('Regel 2: jedes Modul in src/server beginnt mit import "server-only"', () => {
     const violations = production
       .filter((file) => file.relative.startsWith("src/server/"))

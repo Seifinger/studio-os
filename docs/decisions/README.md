@@ -28,3 +28,4 @@ neues ADR ersetzt (Status „ersetzt durch 00xx“).
 | [0020](0020-restaurant-komposition-und-beispielseiten.md) | Restaurant-Komposition, Beispielseiten und statischer Export | angenommen |
 | [0021](0021-lead-demos-live-aus-google-places.md) | Lead-Demos live aus Google Places, nur lokal | angenommen |
 | [0022](0022-design-system-narrative-editorial.md) | Design-System-Paket und Basissystem „narrative-editorial“ | angenommen |
+| [0023](0023-conversion-layer-anfragen-per-e-mail.md) | Conversion-Layer: Anfragen per E-Mail, ohne Datenbank | angenommen |

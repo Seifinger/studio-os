@@ -55,8 +55,8 @@ Dialog, Dropdown, Toast, Datei-Upload, Tabellen, Login, Cookie-Hinweis. Regeln:
 - Hero, Titeltypografie, Bildzuschnitt, Navigationsform, Speisekarten-Darstellung, Farbwelt,
   Seitenrhythmus, Bewegung, Einbindung von Reservierung/Bestellung und Dramaturgie kommen **nie** aus
   einer Komponentenbibliothek.
-- Die Abhängigkeit wird mit dem ersten Formular (ROADMAP Stufe 5) bzw. dem Dashboard (Stufe 7) per
-  ADR aufgenommen.
+- Die Abhängigkeit wird mit dem Dashboard (Stufe 7) per ADR aufgenommen. Die Anfrageformulare der
+  Stufe 5 kommen mit nativen Feldern aus (ADR 0023).
 
 ## 3. Anti-AI-Slop-Regeln
 
@@ -304,3 +304,23 @@ Ornament-Trenner, Etikett-Karten mit Pfeil, Standortliste über Foto, eingebette
 
 Erstes Küchen-Theme: `indian-bombay-story` – Hausküche und Stadt, gemalte Ladenschrift, Sandstein,
 Messing, Zinnober, Regenabend-Indigo; Klischees stehen in den Ausschlüssen der Bildsprache.
+
+## 13. Anfrageformulare (Stufe 5, ADR 0023)
+
+Logik und Felder sind geteilt (`src/domain/requests`), das Aussehen gehört der Komposition
+(`compositions/shared` liefert nur Markup und Verhalten, die Klassen kommen aus dem CSS-Modul des Hauses).
+
+- **Ehrlich benannt:** „Tisch anfragen“, „Anfrage senden“, „Das ist noch keine Reservierung“ – auf der
+  Seite, in der Bestätigung und in beiden E-Mails.
+- **So wenige Felder wie möglich:** Name, E-Mail (für die Bestätigung), Telefon optional; Tisch:
+  Datum, Uhrzeit, Personen, Anmerkung; Abholung: Abholtag, Abholzeit, Bestellung. Jede Beschriftung
+  sichtbar, Hinweise sagen, wozu eine Angabe dient.
+- **Fehler am Feld, nie nur über Farbe:** Balken in der Signalfarbe des Hauses, fette Schrift, Text,
+  der sagt, was zu tun ist; Rahmen des Felds kräftiger. Keine eigene Warnfarbe – die Palette gehört
+  dem Haus. Fokus springt zum ersten Fehler; die Meldung fürs Formular ist `role="alert"`.
+- **Erfolg** ersetzt das Formular durch eine Fläche mit Titel in der Titelschrift (`role="status"`,
+  fokussiert) – kein Konfetti, kein Häkchen-Icon.
+- **Ohne JavaScript** funktioniert alles: Der Browser prüft Pflichtfelder selbst, die Route antwortet
+  mit einer schlichten Seite und einem Weg zurück.
+- **Mobil:** Scroll-Abstand hält Felder und Knopf über der klebenden Leiste; Tippziele ≥ 44 px.
+- **Demos:** Beispiele und Lead-Demos zeigen das Formular gesperrt, mit Begründung, ohne JavaScript.

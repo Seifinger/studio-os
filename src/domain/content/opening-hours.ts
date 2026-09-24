@@ -99,6 +99,25 @@ function formatDays(days: readonly Weekday[]): string {
   return `${WEEKDAY_LABEL[first]}–${WEEKDAY_LABEL[last]}`;
 }
 
+/**
+ * Ist zur Uhrzeit (Minuten ab Tagesbeginn) an diesem Wochentag geöffnet? Berücksichtigt Zeiträume
+ * des Vortags, die über Mitternacht reichen (Fr 18:00–01:00 → Sa 00:30 geöffnet).
+ */
+export function isOpenAt(hours: OpeningHours, day: Weekday, minutes: number): boolean {
+  const index = WEEKDAYS.indexOf(day);
+  const previous = WEEKDAYS[(index + WEEKDAYS.length - 1) % WEEKDAYS.length] ?? "so";
+  const today = hours.week[day].some((interval) => {
+    const [start, end] = span(interval);
+    return minutes >= start && minutes < end;
+  });
+  return today || hours.week[previous].some((interval) => minutes < span(interval)[1] - 1440);
+}
+
+/** Zeiträume eines Tages als Text („11:30–14:00, 17:30–22:00“ oder „Ruhetag“). */
+export function formatDayHours(hours: OpeningHours, day: Weekday): string {
+  return formatDay(hours.week[day]);
+}
+
 export type OpeningHoursRow = { readonly days: string; readonly times: string };
 
 /**

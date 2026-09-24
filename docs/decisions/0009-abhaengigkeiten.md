@@ -38,6 +38,12 @@ Alle Versionen sind exakt gepinnt (`save-exact=true`). `npm audit` meldet 0 Schw
 |---|---|---|---|
 | 24 × `@fontsource/*` (Vollkorn, Alegreya Sans, Cormorant Garamond, Karla, Marcellus, Figtree, Bricolage Grotesque, Work Sans, Reem Kufi, Young Serif, Hanken Grotesk, Chivo, Newsreader, Be Vietnam Pro, Antonio, Zen Kaku Gothic New, Rozha One, Source Serif 4, Schibsted Grotesk, Instrument Serif, Instrument Sans, Libre Caslon Display, Libre Franklin, Fraunces) | 5.3.0 | OFL-1.1 | Selbst gehostete Schriften für Kundenseiten und Demos; reine Daten (woff2 + CSS), kein Code |
 
+**Ergänzung 2026-09-24 (ADR 0023): keine neue Abhängigkeit für den Conversion-Layer**
+
+- Resend wird per `fetch` angesprochen, ohne SDK.
+- Im Browser prüft `zod/mini` die Antworten der Anfrage-Route; es gehört zum vorhandenen Paket `zod`.
+- Radix bleibt bis Stufe 7 draußen, native Formularfelder genügen.
+
 ## Bewusst nicht aufgenommen
 
 - **Prettier:** sinnvoll, aber nicht Teil des Auftrags; ESLint + `.editorconfig` reichen für den

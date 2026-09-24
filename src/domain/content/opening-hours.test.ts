@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatOpeningHours, type OpeningHours, openingHoursRows, openingHoursSchema } from "./opening-hours";
+import { formatDayHours, formatOpeningHours, isOpenAt, type OpeningHours, openingHoursRows, openingHoursSchema } from "./opening-hours";
 
 const closed: [] = [];
 const lunchAndDinner = [
@@ -77,5 +77,35 @@ describe("openingHoursRows", () => {
       { days: "Mi, Do", times: "18:00–23:00" },
       { days: "Fr–So", times: "Ruhetag" },
     ]);
+  });
+});
+
+describe("isOpenAt", () => {
+  const minutes = (value: string) => {
+    const [h = 0, m = 0] = value.split(":").map(Number);
+    return h * 60 + m;
+  };
+  const hours: OpeningHours = { week: week({ fr: lunchAndDinner, sa: [{ from: "18:00", to: "01:00" }], so: [{ from: "20:00", to: "02:00" }] }) };
+
+  it("prüft Beginn einschließlich und Ende ausschließlich", () => {
+    expect(isOpenAt(hours, "fr", minutes("11:30"))).toBe(true);
+    expect(isOpenAt(hours, "fr", minutes("13:59"))).toBe(true);
+    expect(isOpenAt(hours, "fr", minutes("14:00"))).toBe(false);
+    expect(isOpenAt(hours, "fr", minutes("15:00"))).toBe(false);
+    expect(isOpenAt(hours, "fr", minutes("11:29"))).toBe(false);
+  });
+
+  it("zählt Zeiträume über Mitternacht zum Folgetag – auch von Sonntag in den Montag", () => {
+    expect(isOpenAt(hours, "sa", minutes("23:30"))).toBe(true);
+    expect(isOpenAt(hours, "so", minutes("00:30"))).toBe(true);
+    expect(isOpenAt(hours, "so", minutes("01:00"))).toBe(false);
+    expect(isOpenAt(hours, "mo", minutes("01:30"))).toBe(true);
+    expect(isOpenAt(hours, "mo", minutes("02:00"))).toBe(false);
+  });
+
+  it("ist an Ruhetagen nie geöffnet", () => {
+    expect(isOpenAt(hours, "di", minutes("12:00"))).toBe(false);
+    expect(formatDayHours(hours, "di")).toBe("Ruhetag");
+    expect(formatDayHours(hours, "fr")).toBe("11:30–14:00, 17:30–22:00");
   });
 });

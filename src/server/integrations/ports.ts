@@ -74,6 +74,8 @@ export interface PlaceDetailsPort {
 /* ---------- Transaktionale E-Mail (z. B. Resend) – Stufe 5 ---------- */
 
 export type OutboundEmail = {
+  /** Anzeigename des Absenders („Gasthaus zur Linde“); die Adresse kommt aus EMAIL_FROM. */
+  readonly fromName?: string;
   readonly to: readonly string[];
   readonly subject: string;
   /** Textfassung ist Pflicht (Barrierefreiheit, Zustellbarkeit). */

@@ -13,6 +13,7 @@ import { RenderGateError } from "@/domain/quality/render-gate";
 
 import type { RenderProfile, SiteModel } from "./model";
 import { RestaurantSite, siteActions } from "./site";
+import { themeStyle } from "./theme";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 function firstShowcase() {
@@ -93,6 +94,12 @@ describe("Stylesheets der Komposition", () => {
   it.each(cssFiles.map((file) => [path.basename(file), file] as const))("%s hält die Musterregeln S1–S7 ein", (_name, file) => {
     const findings = checkStylesheet(readFileSync(file, "utf8")).filter((finding) => finding.severity === "fehler");
     expect(findings).toEqual([]);
+  });
+
+  it.each(cssFiles.map((file) => [path.basename(file), file] as const))("%s nutzt nur Theme-Variablen, die es gibt", (_name, file) => {
+    const defined = new Set(Object.keys(themeStyle(first.direction)));
+    const used = [...readFileSync(file, "utf8").matchAll(/var\((--(?:c|f|w|s|label)-[a-z0-9-]+|--radius)\b/g)].map((match) => match[1] ?? "");
+    expect([...new Set(used)].filter((name) => !defined.has(name))).toEqual([]);
   });
 
   it.each(cssFiles.map((file) => [path.basename(file), file] as const))("%s enthält keine Farbwerte außerhalb der Tokens", (_name, file) => {

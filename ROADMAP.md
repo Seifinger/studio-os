@@ -1,6 +1,6 @@
 # ROADMAP.md – Produktplan in Stufen
 
-Stand: 23.09.2026 (Stufe 4 abgeschlossen) · Grundlage: Produktplan des Inhabers (Stack, Zielarchitektur, Phasen für
+Stand: 24.09.2026 (Stufe 5 abgeschlossen) · Grundlage: Produktplan des Inhabers (Stack, Zielarchitektur, Phasen für
 Reservierung/Bestellung, Kostenrahmen) abgeglichen mit `MIGRATION.md` und der Foundation.
 Entscheidung dazu: [`docs/decisions/0012-produktplan-uebernommen.md`](docs/decisions/0012-produktplan-uebernommen.md).
 
@@ -21,8 +21,8 @@ Entscheidung dazu: [`docs/decisions/0012-produktplan-uebernommen.md`](docs/decis
 | Sprache, Framework | TypeScript, Next.js (App Router) | 0 | ✅ Foundation |
 | Styling | Tailwind CSS + eigene Komponenten | 0 | ✅ Foundation |
 | Validierung, Tests | Zod, Vitest, Playwright | 0 | ✅ Foundation |
-| Funktionale Komponenten | Radix UI (headless) / shadcn/ui als Quellcode – **nur Funktionales**, nie als Optik von Kundenseiten | 5 (erstes Formular) bzw. 7 (Dashboard) | geplant, ADR bei Einführung |
-| E-Mail | Resend | 5 | Port vorhanden |
+| Funktionale Komponenten | Radix UI (headless) / shadcn/ui als Quellcode – **nur Funktionales**, nie als Optik von Kundenseiten | 7 (Dashboard) | geplant, ADR bei Einführung; die Anfrageformulare (Stufe 5) kommen mit nativen Feldern aus (ADR 0023) |
+| E-Mail | Resend | 5 | ✅ Adapter per `fetch` hinter `EmailSenderPort`, lokal prüfbar über die Anfrage-Probe (ADR 0023) |
 | Demo-Veröffentlichung | GitHub Pages (statischer Export) | 4 | ✅ Export + Prüfung + manueller Workflow; Lead-Demos nur lokal (ADR 0016 B, 0020, 0021) |
 | Hosting Kundenseiten | Vercel (Custom Domains) oder anderer kommerziell zulässiger Host – nicht GitHub Pages | 6 (Livegang) | Hobby nur nicht-kommerziell → Pro vor erstem Live-Kunden |
 | Domains, DNS | Cloudflare | 6 | geplant |
@@ -45,7 +45,7 @@ Jede Stufe ist eine eigene Aufgabe mit Freigabe. „K…“ verweist auf die Üb
 | **2 · Inhaltsqualität** ✅ | Copy-Regeln gegen KI-Floskeln (melden + Vorschlag), Katalog verbotener Muster S1–S10 mit CSS-/Markup-Prüfung, `assertRenderable` als Build-Gate (ADR 0018) | K7, K8, K18 | Regeldaten mit Positiv-/Negativtests |
 | **3 · Design Directions und Art Direction** ✅ | Design-Direction-Schema mit Kontrast-, Schrift- und Referenzprüfung, 14 Directions (eine je Küche), Creative-Direction- und Bildplan-Schema, Schriftregister mit 24 selbst gehosteten OFL-Schriften (ADR 0019) | K9–K12, K19 | Zwei gegensätzliche Directions dokumentiert und validiert |
 | **4 · Demos als Referenzprojekt** ✅ | Restaurant-Komposition aus Profil + Direction + Dramaturgie; **14 Beispielhäuser** (eines je Küche, fiktiv) unter `/beispiele`, statischer Export für GitHub Pages mit Veröffentlichungsprüfung (ADR 0020); **Lead-Demos** live aus Google Place Details, nur lokal (ADR 0021). Screenshot-Review mobil/Desktop, Playwright | K17 | Demos bestehen Review + Tauschprobe; offen: Web-Vitals-Messung im Export, Rechtstexte prüfen lassen |
-| **5 · Conversion-Layer (Phase 1)** | Reservierungsanfrage und Abhol-Anfrage **ohne Zahlung** per E-Mail (Resend) an den Betrieb + Eingangsbestätigung an den Gast; Rate-Limit, Spam-Schutz, keine Speicherung von Gästedaten in dieser Stufe; Telefon-/WhatsApp-CTA, Links zu vorhandenen Buchungssystemen | – | Anfrage kommt an, Fehlerfälle getestet, keine Datenbank nötig |
+| **5 · Conversion-Layer (Phase 1)** ✅ | Tisch- und Abhol-Anfrage **ohne Zahlung** per E-Mail (Resend) an den Betrieb + Eingangsbestätigung an den Gast; Empfänger nur aus dem Profil; Rate-Limit, Honigtopf, Herkunftsprüfung, keine Speicherung von Gästedaten; Formular mit progressiver Verbesserung, ohne JavaScript auf Beispielseiten; lokale **Anfrage-Probe** mit den Beispielhäusern (ADR 0023). Telefon-/WhatsApp-CTA und Links zu Buchungssystemen gibt es seit Stufe 1/4 | – | Anfrage kommt an (E2E gegen Resend-Ersatz, manuell über die Probe mit echtem Resend), Fehlerfälle getestet, keine Datenbank; offen: Resend-Domain verifizieren, Datenschutztext je Kunde (Stufe 6) |
 | **6 · Livegang** | Erster echter Kunde: Vercel-Projekt (kommerzieller Tarif) oder anderer zulässiger Host – nicht GitHub Pages, Kundendomain über Cloudflare, Sentry, optional cookielose Analytics, Content-Security-Policy, Impressum/Datenschutz je Kunde, `OPERATIONS.md` (Deployment, Domain, Störungen) | – | Erster Kunde live |
 | **7 · Datenbank und Studio-Dashboard** | *Ausdrücklich geplanter Dashboard-Schritt*: Supabase-Schema und erste Migration (organizations, restaurants, website_projects, menus, media_assets …), Auth, Row Level Security, Storage, `SECURITY.md`. Prüfen, ob Studio und Kundenseiten getrennt deployt werden (Workspaces) | K14 | Fremdzugriff-Tests grün; keine Migration vorher |
 | **8 · Lead-Recherche in studio-os** | Temporäre Rechercheansicht (Places live, nichts gespeichert außer Place-ID), manueller Import, Website-Audit mit SSRF-Schutz, **Need Score** + **Close Score**, Design-Direction-Vorschlag, Konzept-Demo. Löst gastro-v3 als Vertriebswerkzeug ab | K3, K4, K5 | gastro-v3 wird nicht mehr gebraucht |

@@ -225,6 +225,58 @@
   resize: vertical;
 }
 
+/*
+ * Fehler ohne eigene Warnfarbe: Die Palette gehört dem Haus. Erkennbar sind sie an Balken, Stärke und
+ * Text – nie nur an Farbe (DESIGN.md §8).
+ */
+.form [aria-invalid="true"] {
+  border-width: 2px;
+  border-color: var(--c-text);
+}
+
+.fieldHint {
+  color: var(--c-muted);
+  font-size: 0.875rem;
+}
+
+.fieldError,
+.formAlert {
+  padding-left: 0.75rem;
+  border-left: 3px solid var(--c-primary);
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.formAlert {
+  flex-basis: 100%;
+}
+
+/* Fokus nach Fehler oder Versand nie unter der mobilen Handlungsleiste (WCAG 2.4.11). */
+.form input,
+.form textarea,
+.form button,
+.formSuccess {
+  scroll-margin-block: 5rem;
+}
+
+.formSuccess {
+  display: grid;
+  align-self: start;
+  align-content: start;
+  gap: 0.75rem;
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 2px solid var(--c-text);
+  border-radius: var(--radius);
+  background-color: var(--c-surface);
+}
+
+.formSuccessTitle {
+  font-family: var(--f-display);
+  font-weight: var(--w-display);
+  font-size: var(--s-h2);
+  line-height: 1.15;
+}
+
 .formFooter {
   display: flex;
   flex-wrap: wrap;
@@ -243,6 +295,11 @@
   font: inherit;
   font-weight: 700;
   cursor: pointer;
+}
+
+.submit[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.7;
 }
 
 /* In Demos sichtbar gesperrt – mit Begründung daneben statt stillem Nichtstun. */

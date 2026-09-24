@@ -82,6 +82,9 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
   (`STUDIO_LEAD_DEMOS=local` + localhost, ADR 0021) – nie im statischen Export.
 - Beispielbetriebe nur über `defineShowcase`: Rufnummern 089 99998 1xx, Postleitzahlen 00xxx,
   keine Gästestimmen, keine Fotos ohne eigene Rechte (ADR 0020).
+- **Anfragen (ADR 0023):** Empfänger kommen nur aus dem Profil über das Fakten-Gate, nie aus dem
+  Formular. Gästedaten werden nicht gespeichert und nie geloggt (Logs: Seite, Art, Fehlerart, Status).
+  Tests verschicken keine echten E-Mails – nur Fakes oder `tests/support/mock-resend.mjs`.
 - Keine echten Gäste- oder Kundendaten in Tests, Fixtures oder Screenshots.
 
 ## 6. Code-Konventionen
@@ -89,7 +92,8 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
 - TypeScript strict (siehe `tsconfig.json`), kein `any` – `unknown` + Zod an jeder Grenze.
 - Modulgrenzen aus `ARCHITECTURE.md`, Abschnitt 3 einhalten; `tests/unit/architecture.test.ts` prüft sie.
   `packages/design-system` bleibt rein (nur `zod`, eigene Dateien, `@/domain`); Themes nur über
-  `extendTheme` und die Registry (ADR 0022).
+  `extendTheme` und die Registry (ADR 0022). Kompositionen importieren das scharfe Anfrageformular
+  nicht selbst – die Seite reicht es hinein (Regel 10, ADR 0023).
 - `domain` ist rein: kein I/O, kein React, kein Next, kein `process.env`.
 - Bezeichner im Code englisch, UI-Texte und Dokumentation deutsch (ADR 0008). Fachbegriffe ohne
   treffende Übersetzung bleiben deutsch, dann konsequent.
@@ -105,7 +109,7 @@ npm run dev           # Entwicklungsserver
 npm run check         # ESLint + Typprüfung + Vitest
 npm run build         # Produktions-Build
 npm run start         # Produktionsserver (nach build)
-npm run test:e2e      # Playwright: Smoke-Test und Beispielseiten (nach build)
+npm run test:e2e      # Playwright: Smoke-Test, Beispielseiten, Anfragen gegen Resend-Ersatz (nach build)
 npm run export:showcases  # statischer Export der Beispielseiten nach out/
 npm run check:export      # Veröffentlichungsprüfung gegen out/ (braucht STUDIO_OPERATOR_*)
 ```

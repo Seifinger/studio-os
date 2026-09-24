@@ -15,7 +15,7 @@ function issuesOf(result: ReturnType<typeof parseServerEnv>) {
 describe("parseServerEnv", () => {
   it("akzeptiert eine leere Umgebung: keine Integration ist Pflicht", () => {
     const result = parseServerEnv({});
-    expect(result).toEqual({ ok: true, env: { NODE_ENV: "development", STUDIO_LEAD_DEMOS: "off" } });
+    expect(result).toEqual({ ok: true, env: { NODE_ENV: "development", STUDIO_LEAD_DEMOS: "off", STUDIO_REQUEST_PROBE: "off" } });
   });
 
   it("behandelt leere und reine Leerzeichen-Werte wie nicht gesetzt", () => {
@@ -63,6 +63,21 @@ describe("parseServerEnv", () => {
       expect(issues.map((issue) => issue.variable)).toEqual(["EMAIL_FROM"]);
     },
   );
+
+  it("erlaubt eine abweichende Resend-Adresse nur mit https – unverschlüsselt nur auf localhost", () => {
+    expect(parseServerEnv({ RESEND_BASE_URL: "https://mail-proxy.example" }).ok).toBe(true);
+    expect(parseServerEnv({ RESEND_BASE_URL: "http://127.0.0.1:3111" }).ok).toBe(true);
+    expect(parseServerEnv({ RESEND_BASE_URL: "http://localhost:3111" }).ok).toBe(true);
+    for (const value of ["http://mail-proxy.example", "ftp://127.0.0.1", "api.resend.com"]) {
+      expect(issuesOf(parseServerEnv({ RESEND_BASE_URL: value })).map((issue) => issue.variable)).toEqual(["RESEND_BASE_URL"]);
+    }
+  });
+
+  it("schaltet die Anfrage-Probe nur mit „local“ ein", () => {
+    const probe = parseServerEnv({ STUDIO_REQUEST_PROBE: "local" });
+    expect(probe.ok && probe.env.STUDIO_REQUEST_PROBE).toBe("local");
+    expect(issuesOf(parseServerEnv({ STUDIO_REQUEST_PROBE: "on" })).map((issue) => issue.variable)).toEqual(["STUDIO_REQUEST_PROBE"]);
+  });
 
   it("lehnt einen unbekannten NODE_ENV ab", () => {
     expect(issuesOf(parseServerEnv({ NODE_ENV: "staging" }))).toEqual([
