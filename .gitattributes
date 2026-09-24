@@ -1,0 +1,4 @@
+# Zeilenenden im Repository immer LF, unabhängig von lokalem core.autocrlf –
+# tests/unit/architecture.test.ts prüft Dateiinhalte roh und wird bei CRLF (z. B.
+# Windows-Checkouts) fälschlich rot.
+* text=auto eol=lf
