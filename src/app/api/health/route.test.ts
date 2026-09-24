@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { healthReportSchema } from "@/server/health";
 
-import { GET } from "./route";
+import { GET } from "./route.live";
 
 describe("GET /api/health", () => {
   it("antwortet 200 mit gültigem Bericht und ohne Cache", async () => {

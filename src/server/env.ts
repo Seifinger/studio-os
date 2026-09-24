@@ -39,7 +39,12 @@ type Pair = readonly [string, string];
 const REQUIRED_TOGETHER: readonly Pair[] = [
   ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
   ["RESEND_API_KEY", "EMAIL_FROM"],
+  ["STUDIO_OPERATOR_NAME", "STUDIO_OPERATOR_ADDRESS"],
+  ["STUDIO_OPERATOR_NAME", "STUDIO_OPERATOR_EMAIL"],
 ];
+
+const optionalText = z.preprocess(emptyToUndefined, z.string().trim().min(3).max(200).optional());
+const optionalEmail = z.preprocess(emptyToUndefined, z.email({ error: "keine gültige E-Mail-Adresse" }).optional());
 
 export const serverEnvSchema = z
   .object({
@@ -55,6 +60,14 @@ export const serverEnvSchema = z
     EMAIL_FROM: optionalSender,
     VERCEL_TOKEN: optionalSecret,
     ANTHROPIC_API_KEY: optionalSecret,
+    // Anbieterkennzeichnung (§ 5 DDG) der öffentlichen Beispielseiten – kein Geheimnis, aber
+    // personenbezogen; deshalb nicht im Repository, sondern beim Veröffentlichen gesetzt (ADR 0020).
+    // Lead-Demos mit Live-Daten aus Google Places: nur "local" schaltet sie ein, und dann nur für
+    // Aufrufe über localhost (ADR 0016 Option B, ADR 0021).
+    STUDIO_LEAD_DEMOS: z.preprocess(emptyToUndefined, z.enum(["off", "local"], { error: 'muss "off" oder "local" sein' }).default("off")),
+    STUDIO_OPERATOR_NAME: optionalText,
+    STUDIO_OPERATOR_ADDRESS: optionalText,
+    STUDIO_OPERATOR_EMAIL: optionalEmail,
   })
   .superRefine((env, ctx) => {
     const values: Readonly<Record<string, unknown>> = env;

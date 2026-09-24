@@ -15,7 +15,7 @@ function issuesOf(result: ReturnType<typeof parseServerEnv>) {
 describe("parseServerEnv", () => {
   it("akzeptiert eine leere Umgebung: keine Integration ist Pflicht", () => {
     const result = parseServerEnv({});
-    expect(result).toEqual({ ok: true, env: { NODE_ENV: "development" } });
+    expect(result).toEqual({ ok: true, env: { NODE_ENV: "development", STUDIO_LEAD_DEMOS: "off" } });
   });
 
   it("behandelt leere und reine Leerzeichen-Werte wie nicht gesetzt", () => {

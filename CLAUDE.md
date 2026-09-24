@@ -19,6 +19,9 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
 - Übernahmen laufen nach `MIGRATION.md`: Regeln und Tests als Spezifikation lesen, neu in TypeScript
   schreiben, Quelle (Datei + Commit) in einem ADR nennen.
 - Was dort instabil, doppelt oder unklar ist, wird dokumentiert (`MIGRATION.md`, Abschnitt 2), nicht migriert.
+- Fremde Designreferenzen (z. B. Dishoom) liegen nur lokal unter `references/` und werden nie
+  committet. Übernommen werden nur abstrakte Prinzipien; die Liste „nicht kopieren“ in
+  `docs/design-studies/dishoom-analysis.md` §11 ist verbindlich.
 
 ## 2. Arbeitsweise
 
@@ -45,7 +48,8 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
   durch Fakes ersetzt; Zeit und Zufall werden injiziert.
 - Tests werden nie übersprungen, deaktiviert, abgeschwächt oder gelöscht, um grün zu werden.
 - **Vor jedem Commit grün**: `npm run check` (Lint, Typprüfung, Unit-Tests) und `npm run build`.
-- Playwright (`npm run test:e2e`) ist vorbereitet; umfangreiche E2E-Suiten entstehen erst mit echten Abläufen.
+- Playwright (`npm run test:e2e`) prüft Beispielseiten mobil und am Desktop; mit vorinstalliertem
+  Chromium `PLAYWRIGHT_CHROMIUM_EXECUTABLE` setzen.
 
 ## 4. Abhängigkeiten
 
@@ -67,18 +71,25 @@ wiederverwendbare Systeme. Pflichtlektüre vor jeder Aufgabe: `ROADMAP.md`, `ARC
 - Jedes Modul in `src/server` (außer Tests) beginnt mit `import "server-only";`.
 - **Keine erfundenen Betriebsfakten** in Demos oder Kundenseiten (Öffnungszeiten, Preise, Gerichte,
   Geschichte, Stimmen, Bewertungen). Fiktive Beispielbetriebe sind sichtbar als „Beispiel – frei
-  erfunden“ gekennzeichnet und `noindex`.
+  erfunden“ gekennzeichnet und `noindex`; ihre Angaben tragen den Status `fiktiv`.
+- Betriebsangaben erscheinen auf Seiten nur über das Fakten-Gate (`src/domain/provenance/gate.ts`);
+  kein Rendering an ihm vorbei.
 - Google-Places-Daten: dauerhaft nur Place-ID + eigene Analyse + unabhängig erhobene Angaben mit
   Quelle; alle anderen Places-Inhalte nie speichern, sondern live abrufen und mit Google-Logo zeigen.
   Nur die Field Masks aus `places-fields.ts`; keine Rezensionen, keine Google-Fotos (ADR 0013).
 - Konzept-Demos für echte Betriebe: nicht öffentlich, gekennzeichnet, Platzhalter statt erfundener
-  Inhalte (ADR 0014).
+  Inhalte (ADR 0014). Lead-Demos entstehen live aus Place Details und laufen nur lokal
+  (`STUDIO_LEAD_DEMOS=local` + localhost, ADR 0021) – nie im statischen Export.
+- Beispielbetriebe nur über `defineShowcase`: Rufnummern 089 99998 1xx, Postleitzahlen 00xxx,
+  keine Gästestimmen, keine Fotos ohne eigene Rechte (ADR 0020).
 - Keine echten Gäste- oder Kundendaten in Tests, Fixtures oder Screenshots.
 
 ## 6. Code-Konventionen
 
 - TypeScript strict (siehe `tsconfig.json`), kein `any` – `unknown` + Zod an jeder Grenze.
 - Modulgrenzen aus `ARCHITECTURE.md`, Abschnitt 3 einhalten; `tests/unit/architecture.test.ts` prüft sie.
+  `packages/design-system` bleibt rein (nur `zod`, eigene Dateien, `@/domain`); Themes nur über
+  `extendTheme` und die Registry (ADR 0022).
 - `domain` ist rein: kein I/O, kein React, kein Next, kein `process.env`.
 - Bezeichner im Code englisch, UI-Texte und Dokumentation deutsch (ADR 0008). Fachbegriffe ohne
   treffende Übersetzung bleiben deutsch, dann konsequent.
@@ -94,7 +105,9 @@ npm run dev           # Entwicklungsserver
 npm run check         # ESLint + Typprüfung + Vitest
 npm run build         # Produktions-Build
 npm run start         # Produktionsserver (nach build)
-npm run test:e2e      # Playwright-Smoke-Test (nach build)
+npm run test:e2e      # Playwright: Smoke-Test und Beispielseiten (nach build)
+npm run export:showcases  # statischer Export der Beispielseiten nach out/
+npm run check:export      # Veröffentlichungsprüfung gegen out/ (braucht STUDIO_OPERATOR_*)
 ```
 
 ## 8. Definition of Done

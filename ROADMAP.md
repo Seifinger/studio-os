@@ -1,6 +1,6 @@
 # ROADMAP.md – Produktplan in Stufen
 
-Stand: 23.09.2026 · Grundlage: Produktplan des Inhabers (Stack, Zielarchitektur, Phasen für
+Stand: 23.09.2026 (Stufe 4 abgeschlossen) · Grundlage: Produktplan des Inhabers (Stack, Zielarchitektur, Phasen für
 Reservierung/Bestellung, Kostenrahmen) abgeglichen mit `MIGRATION.md` und der Foundation.
 Entscheidung dazu: [`docs/decisions/0012-produktplan-uebernommen.md`](docs/decisions/0012-produktplan-uebernommen.md).
 
@@ -23,7 +23,8 @@ Entscheidung dazu: [`docs/decisions/0012-produktplan-uebernommen.md`](docs/decis
 | Validierung, Tests | Zod, Vitest, Playwright | 0 | ✅ Foundation |
 | Funktionale Komponenten | Radix UI (headless) / shadcn/ui als Quellcode – **nur Funktionales**, nie als Optik von Kundenseiten | 5 (erstes Formular) bzw. 7 (Dashboard) | geplant, ADR bei Einführung |
 | E-Mail | Resend | 5 | Port vorhanden |
-| Hosting | Vercel (Preview-URLs für Demos, Custom Domains) | 4 (Previews), 6 (Livegang) | Hobby nur nicht-kommerziell → Pro vor erstem Live-Kunden |
+| Demo-Veröffentlichung | GitHub Pages (statischer Export) | 4 | ✅ Export + Prüfung + manueller Workflow; Lead-Demos nur lokal (ADR 0016 B, 0020, 0021) |
+| Hosting Kundenseiten | Vercel (Custom Domains) oder anderer kommerziell zulässiger Host – nicht GitHub Pages | 6 (Livegang) | Hobby nur nicht-kommerziell → Pro vor erstem Live-Kunden |
 | Domains, DNS | Cloudflare | 6 | geplant |
 | Fehlertracking | Sentry (EU, ohne Session-Replay, PII-Filter) | 6 | geplant |
 | Analytics | Plausible oder Umami (cookielos, EU) – nur mit Zustimmung des Kunden | 6 | geplant |
@@ -40,12 +41,12 @@ Jede Stufe ist eine eigene Aufgabe mit Freigabe. „K…“ verweist auf die Üb
 | Stufe | Inhalt | Kandidaten | Ergebnis / Kriterium „fertig“ |
 |---|---|---|---|
 | **0 · Foundation** ✅ | Dokumente, Next.js-Grundgerüst, Health-Check, Checks, Ports | K6 (Kontrast) | `check`, `build`, E2E grün |
-| **1 · Fachkern und Content-Modell** | Provenienz je Angabe (Fakten-Gate), Briefing mit Fragenkatalog, Content-Modell: Speisekarte, Öffnungszeiten, CTAs (Telefon, WhatsApp, Reservierungsanfrage, externes Buchungssystem wie Resmio/OpenTable/Quandoo), stabiler Hash | K1, K2, K16 | Reine Zod-Schemas + Funktionen, vollständig getestet |
-| **2 · Inhaltsqualität** | Copy-Regeln gegen KI-Floskeln (melden + Vorschlag), Katalog verbotener Muster, Fakten-Gate fürs Rendering | K7, K8, K18 | Regeldaten mit Positiv-/Negativtests |
-| **3 · Design Directions und Art Direction** | Design-Direction-Schema (Stilrichtung, Tokens, Layout-Vokabular), Creative Direction je Haus, Bildplan, Schriftregister mit Lizenzen, Referenzkatalog sichten | K9–K12, K19 | Zwei gegensätzliche Directions dokumentiert und validiert |
-| **4 · Referenzprojekt: erste Kundenseite** | Komposition für den ersten echten Kunden (bevorzugt) oder einen klar fiktiven Piloten; *Design zuerst*. Demo-Modus mit nicht öffentlichen Vorschau-Links (ADR 0014). Screenshot-Review vorbereiten | K17 | Seite besteht Review + Tauschprobe; LCP/CLS/INP im Budget |
+| **1 · Fachkern und Content-Modell** ✅ | Provenienz je Angabe mit fünf Status und Fakten-Gate für drei Seitenarten (ADR 0015), Betriebs- und Restaurantprofil, Fragenkatalog, Speisekarte, Öffnungszeiten, Aktionen (Telefon, WhatsApp, Anfrage, externes Buchungssystem, Route), Küchen-Vorschlag aus dem Namen, stabiler Hash (ADR 0017) | K1, K2, K16, K20 | Reine Zod-Schemas + Funktionen, vollständig getestet |
+| **2 · Inhaltsqualität** ✅ | Copy-Regeln gegen KI-Floskeln (melden + Vorschlag), Katalog verbotener Muster S1–S10 mit CSS-/Markup-Prüfung, `assertRenderable` als Build-Gate (ADR 0018) | K7, K8, K18 | Regeldaten mit Positiv-/Negativtests |
+| **3 · Design Directions und Art Direction** ✅ | Design-Direction-Schema mit Kontrast-, Schrift- und Referenzprüfung, 14 Directions (eine je Küche), Creative-Direction- und Bildplan-Schema, Schriftregister mit 24 selbst gehosteten OFL-Schriften (ADR 0019) | K9–K12, K19 | Zwei gegensätzliche Directions dokumentiert und validiert |
+| **4 · Demos als Referenzprojekt** ✅ | Restaurant-Komposition aus Profil + Direction + Dramaturgie; **14 Beispielhäuser** (eines je Küche, fiktiv) unter `/beispiele`, statischer Export für GitHub Pages mit Veröffentlichungsprüfung (ADR 0020); **Lead-Demos** live aus Google Place Details, nur lokal (ADR 0021). Screenshot-Review mobil/Desktop, Playwright | K17 | Demos bestehen Review + Tauschprobe; offen: Web-Vitals-Messung im Export, Rechtstexte prüfen lassen |
 | **5 · Conversion-Layer (Phase 1)** | Reservierungsanfrage und Abhol-Anfrage **ohne Zahlung** per E-Mail (Resend) an den Betrieb + Eingangsbestätigung an den Gast; Rate-Limit, Spam-Schutz, keine Speicherung von Gästedaten in dieser Stufe; Telefon-/WhatsApp-CTA, Links zu vorhandenen Buchungssystemen | – | Anfrage kommt an, Fehlerfälle getestet, keine Datenbank nötig |
-| **6 · Livegang** | Vercel-Projekt (kommerzieller Tarif), Kundendomain über Cloudflare, Sentry, optional cookielose Analytics, Content-Security-Policy, Impressum/Datenschutz je Kunde, `OPERATIONS.md` (Deployment, Domain, Störungen) | – | Erster Kunde live |
+| **6 · Livegang** | Erster echter Kunde: Vercel-Projekt (kommerzieller Tarif) oder anderer zulässiger Host – nicht GitHub Pages, Kundendomain über Cloudflare, Sentry, optional cookielose Analytics, Content-Security-Policy, Impressum/Datenschutz je Kunde, `OPERATIONS.md` (Deployment, Domain, Störungen) | – | Erster Kunde live |
 | **7 · Datenbank und Studio-Dashboard** | *Ausdrücklich geplanter Dashboard-Schritt*: Supabase-Schema und erste Migration (organizations, restaurants, website_projects, menus, media_assets …), Auth, Row Level Security, Storage, `SECURITY.md`. Prüfen, ob Studio und Kundenseiten getrennt deployt werden (Workspaces) | K14 | Fremdzugriff-Tests grün; keine Migration vorher |
 | **8 · Lead-Recherche in studio-os** | Temporäre Rechercheansicht (Places live, nichts gespeichert außer Place-ID), manueller Import, Website-Audit mit SSRF-Schutz, **Need Score** + **Close Score**, Design-Direction-Vorschlag, Konzept-Demo. Löst gastro-v3 als Vertriebswerkzeug ab | K3, K4, K5 | gastro-v3 wird nicht mehr gebraucht |
 | **9 · Betreiber-Dashboard (Phase 2)** | Ab 3–5 aktiven Kunden: Speisekarte und Tageskarte pflegen, Öffnungszeiten, Bilder hochladen, Reservierungsanfragen einsehen, Änderungen zur Freigabe markieren, Monatsreport | K15 | Betrieb pflegt selbst, Studio gibt frei |
@@ -72,11 +73,11 @@ späteren Paket:
 | `apps/dashboard` | `src/app/(studio)` + `src/ui` (ab Stufe 7) | Studio eine eigene Sicherheitsgrenze/Domain bekommt |
 | `apps/customer-portal` | `src/app/(betrieb)` (ab Stufe 9) | wie Dashboard |
 | `packages/ui` | `src/ui` | eine zweite App es braucht |
-| `packages/design-system` | `src/domain/design` (Directions, Tokens) + `src/compositions` | – |
+| `packages/design-system` | `packages/design-system/` ✅ (Themes, Komposition, Motion, Bildbriefings; Alias, ADR 0022) + `src/domain/design` + `src/compositions` | Workspaces eingeführt werden |
 | `packages/site-generator` | `src/compositions` + `src/server/sites` | – |
 | `packages/scoring-engine` | `src/domain/leads` | – |
 | `packages/integrations` | `src/server/integrations` | – |
-| `packages/content-model` | `src/domain/content` + `src/domain/provenance` | – |
+| `packages/content-model` | `src/domain/content`, `src/domain/provenance`, `src/domain/gastronomy`, `src/domain/briefing` ✅ | – |
 | `supabase/migrations`, `seed` | `supabase/` (ab Stufe 7) | – |
 | `docs/SECURITY.md`, `OPERATIONS.md` | heute ARCHITECTURE.md §5; eigene Dateien ab Stufe 6/7 | – |
 

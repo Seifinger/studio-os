@@ -1,0 +1,63 @@
+/* Jede Zeile trägt die Tokens ihres Hauses (theme.ts) – hier stehen keine Farbwerte. */
+
+.band {
+  display: grid;
+  gap: 0.35rem 2rem;
+  padding: 1.25rem clamp(1.1rem, 3vw, 2rem) 1.4rem;
+  border: 1px solid var(--c-line);
+  border-radius: var(--radius);
+  background-color: var(--c-bg);
+  color: var(--c-text);
+  text-decoration: none;
+}
+
+.band:hover .name {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.12em;
+}
+
+.band:focus-visible {
+  outline: 3px solid var(--c-primary);
+  outline-offset: 3px;
+}
+
+.name {
+  font-family: var(--f-display);
+  font-weight: var(--w-display);
+  font-size: clamp(1.75rem, 5vw, 3rem);
+  line-height: 1.05;
+  overflow-wrap: break-word;
+}
+
+.meta {
+  color: var(--c-text);
+  font-family: var(--f-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.mood {
+  max-width: 44rem;
+  color: var(--c-muted);
+  font-family: var(--f-body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+@media (min-width: 52rem) {
+  .band {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 22rem);
+    align-items: start;
+  }
+
+  .meta,
+  .mood {
+    grid-column: 2;
+  }
+
+  .name {
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+}
