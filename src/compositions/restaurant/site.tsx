@@ -26,6 +26,8 @@ export type SiteChrome = {
   readonly overviewHref?: string | undefined;
   readonly impressumHref?: string | undefined;
   readonly datenschutzHref?: string | undefined;
+  /** Zusätzlicher Hinweis in der Kopfleiste (z. B. Anfrage-Probe). */
+  readonly notice?: string | undefined;
 };
 
 /** Profilfeld → Abschnitt, den ein belegtes Signature-Detail hervorhebt. */
@@ -176,6 +178,7 @@ export function RestaurantSite({ model, chrome = {} }: { model: SiteModel; chrom
             <span>{policy.notice}</span>
             {chrome.overviewHref ? <Link href={chrome.overviewHref}>Alle Beispiele</Link> : null}
           </p>
+          {chrome.notice ? <p className={`${styles.inner} ${styles.noticeInner}`}>{chrome.notice}</p> : null}
         </div>
       ) : null}
 

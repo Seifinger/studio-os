@@ -31,7 +31,7 @@ export default function HomePage() {
     <main id="inhalt" className="mx-auto max-w-[44rem] px-6 pb-24 pt-16 sm:pt-24">
       <header className="border-b border-line pb-10">
         <p className="font-mono text-sm text-ink-muted">
-          studio-os · Version {APP_VERSION} · Stufe 4
+          studio-os · Version {APP_VERSION} · Stufe 5
         </p>
         <h1 className="mt-4 text-[2.5rem] font-semibold leading-[1.1] tracking-tight">Studio OS</h1>
         <p className="mt-6 max-w-[34rem] text-xl leading-relaxed text-ink-muted">
@@ -59,6 +59,10 @@ export default function HomePage() {
             <Link href="/demo">Konzept-Demo aus einer Google Place-ID</Link> – nur lokal, live abgerufen,
             nichts gespeichert
           </StatusRow>
+          <StatusRow term="Anfragen">
+            Tisch- und Abhol-Anfragen per E-Mail an den Betrieb, Bestätigung an den Gast, nichts
+            gespeichert – ausprobieren über die <Link href="/anfrage-probe">Anfrage-Probe</Link> (nur lokal)
+          </StatusRow>
           <StatusRow term="Fachkern">
             Angaben mit Herkunft, Fakten-Gate, Copy- und Musterregeln, Design Directions, Creative
             Direction und Bildplan
@@ -85,8 +89,8 @@ export default function HomePage() {
           Bewusst noch nicht gebaut
         </h2>
         <p className="mt-4 max-w-[65ch] text-ink-muted">
-          Versand von Anfragen (Stufe 5), Livegang eines Kunden (Stufe 6), Datenbank und Dashboard
-          (Stufe 7), Lead-Recherche (Stufe 8). Sie folgen in eigenen, freigegebenen Schritten.
+          Livegang eines Kunden (Stufe 6), Datenbank und Dashboard (Stufe 7), Lead-Recherche (Stufe 8).
+          Sie folgen in eigenen, freigegebenen Schritten.
         </p>
       </section>
     </main>

@@ -4,12 +4,27 @@ import type { ResolvedAction } from "@/domain/content/actions";
 import { openingHoursRows } from "@/domain/content/opening-hours";
 import { resolveImageSlot } from "@/domain/design/image-plan";
 
+import { RequestForm as SharedRequestForm, type RequestFormClasses } from "../shared/request-form";
 import styles from "./blocks.module.css";
 import { isVisible, show, type SiteModel } from "./model";
 import { ActionLink, BoardEntry, Draft, DraftBlock, Placeholder, Section, SectionHead } from "./primitives";
 
 export type BlockProps = { model: SiteModel; weight: string; title?: string | undefined; signature?: boolean | undefined };
 type Available = Extract<ResolvedAction, { available: true }>;
+
+const FORM_CLASSES: RequestFormClasses = {
+  form: styles.form,
+  field: styles.field,
+  fieldWide: styles.fieldWide,
+  hint: styles.fieldHint,
+  error: styles.fieldError,
+  footer: styles.formFooter,
+  submit: styles.submit,
+  note: styles.demoNote,
+  alert: styles.formAlert,
+  success: styles.formSuccess,
+  successTitle: styles.formSuccessTitle,
+};
 
 export function Story({ model, weight, title, signature }: BlockProps) {
   const story = show(model.profile.story, model.context);
@@ -177,7 +192,6 @@ export function Visit({ model, weight, title, actions }: BlockProps & { actions:
 }
 
 export function RequestForm({ model, weight, title, kind }: BlockProps & { kind: "tableRequest" | "pickupRequest" }) {
-  const demo = model.context.kind !== "customer";
   const table = kind === "tableRequest";
   const id = table ? "tisch-anfragen" : "abholung-anfragen";
   return (
@@ -187,63 +201,17 @@ export function RequestForm({ model, weight, title, kind }: BlockProps & { kind:
           <SectionHead label={table ? "Tisch anfragen" : "Abholung anfragen"} title={title ?? (table ? "Einen Tisch anfragen" : "Zum Abholen bestellen")} id={`${id}-titel`} />
           <p className={styles.formIntro}>
             {table
-              ? "Die Anfrage geht per E-Mail an das Haus. Sie bekommen eine Bestätigung, sobald der Tisch frei ist."
-              : "Die Bestellung geht per E-Mail an das Haus. Bezahlt wird bei der Abholung."}
+              ? "Die Anfrage geht per E-Mail an das Haus. Sie bekommen sofort eine Eingangsbestätigung, die Zusage kommt vom Haus."
+              : "Die Bestellung geht per E-Mail an das Haus. Das Haus bestätigt die Abholzeit, bezahlt wird vor Ort."}
           </p>
         </div>
-        <form className={styles.form} aria-describedby={demo ? `${id}-demo` : undefined}>
-          <div className={styles.field}>
-            <label htmlFor={`${id}-name`}>Name</label>
-            <input id={`${id}-name`} name="name" autoComplete="name" required />
-          </div>
-          <div className={styles.field}>
-            <label htmlFor={`${id}-telefon`}>Telefon</label>
-            <input id={`${id}-telefon`} name="telefon" type="tel" autoComplete="tel" inputMode="tel" required />
-          </div>
-          {table ? (
-            <>
-              <div className={styles.field}>
-                <label htmlFor={`${id}-datum`}>Datum</label>
-                <input id={`${id}-datum`} name="datum" type="date" required />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor={`${id}-uhrzeit`}>Uhrzeit</label>
-                <input id={`${id}-uhrzeit`} name="uhrzeit" type="time" step={900} required />
-              </div>
-              <div className={styles.field}>
-                <label htmlFor={`${id}-personen`}>Personen</label>
-                <input id={`${id}-personen`} name="personen" type="number" inputMode="numeric" min={1} max={30} required />
-              </div>
-            </>
-          ) : (
-            <>
-              <div className={styles.field}>
-                <label htmlFor={`${id}-abholzeit`}>Abholzeit</label>
-                <input id={`${id}-abholzeit`} name="abholzeit" type="time" step={900} required />
-              </div>
-              <div className={styles.fieldWide}>
-                <label htmlFor={`${id}-bestellung`}>Was dürfen wir vorbereiten?</label>
-                <textarea id={`${id}-bestellung`} name="bestellung" rows={3} required />
-              </div>
-            </>
-          )}
-          {table ? (
-            <div className={styles.fieldWide}>
-              <label htmlFor={`${id}-nachricht`}>Anmerkung (optional)</label>
-              <textarea id={`${id}-nachricht`} name="nachricht" rows={3} />
-            </div>
-          ) : null}
-          <div className={styles.formFooter}>
-            <button type="submit" className={styles.submit} disabled={demo}>
-              {table ? "Anfrage senden" : "Bestellung senden"}
-            </button>
-            {demo ? (
-              <p id={`${id}-demo`} className={styles.demoNote}>
-                In dieser Demo wird nichts verschickt. Auf Ihrer Website landet die Anfrage per E-Mail bei Ihnen.
-              </p>
-            ) : null}
-          </div>
-        </form>
+        <SharedRequestForm
+          kind={table ? "table" : "pickup"}
+          idPrefix={id}
+          requests={model.requests}
+          demoNote="In dieser Demo wird nichts verschickt. Auf Ihrer Website landet die Anfrage per E-Mail bei Ihnen."
+          classes={FORM_CLASSES}
+        />
       </div>
     </Section>
   );

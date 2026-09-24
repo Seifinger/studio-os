@@ -3,10 +3,11 @@
 Technische Grundlage eines KI-unterstützten Website-Studios für lokale Betriebe. Erster Markt:
 Restaurants; später Hotels, Handwerk, Beauty, Fitness und lokale Dienstleister.
 
-**Stand: Stufe 1 von 10.** Foundation (Startseite, Health-Check, Grundlagen) und der Fachkern ohne
-Oberfläche: Angaben mit Herkunft, Fakten-Gate für Beispiel-, Lead-Demo- und Kundenseiten,
-Betriebs-/Restaurantprofil, Speisekarte, Öffnungszeiten, Aktionen. Fachfunktionen folgen schrittweise nach [`ROADMAP.md`](ROADMAP.md); bis zur
-Lead-Recherche in Stufe 8 bleibt `gastro-v3` das Vertriebswerkzeug.
+**Stand: Stufe 5 von 10.** Fachkern mit Fakten-Gate, Inhaltsqualität, Design Directions,
+14 Beispielhäuser (statisch exportierbar), Lead-Demos aus Google Places (nur lokal), das Basissystem
+narrative-editorial und der Conversion-Layer: Tisch- und Abhol-Anfragen per E-Mail an den Betrieb mit
+Bestätigung an den Gast, ohne Datenbank. Weiter geht es nach [`ROADMAP.md`](ROADMAP.md) mit dem ersten
+echten Kunden (Stufe 6); bis zur Lead-Recherche in Stufe 8 bleibt `gastro-v3` das Vertriebswerkzeug.
 
 > Ein gemeinsames System im Hintergrund, aber für den Kunden immer eine eigenständige Website.
 
@@ -37,7 +38,7 @@ npm run dev           # Entwicklungsserver auf http://localhost:3000
 npm run check         # ESLint + Typprüfung + Vitest
 npm run build         # Produktions-Build
 npm run start         # Produktionsserver (nach build)
-npm run test:e2e      # Playwright: Smoke-Test und Beispielseiten (nach build)
+npm run test:e2e      # Playwright: Smoke-Test, Beispielseiten, Anfragen gegen Resend-Ersatz (nach build)
 npm run export:showcases  # statischer Export der Beispielseiten nach out/
 npm run check:export      # Veröffentlichungsprüfung gegen out/
 ```
@@ -55,6 +56,8 @@ Chromium nutzen: `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/pfad/zu/chromium npm run test:
 | `/beispiele/tiffinstube-rao` | Erste Seite im Basissystem narrative-editorial (Theme „indian-bombay-story“, erfundenes Haus) |
 | `/beispiele/impressum`, `/beispiele/datenschutz` | Rechtstexte der Beispielseiten (Betreiber aus `STUDIO_OPERATOR_*`) |
 | `/demo` | Lead-Demo aus einer Google Place-ID – nur mit `STUDIO_LEAD_DEMOS=local` und über localhost |
+| `POST /api/anfragen/<seite>` | Tisch- oder Abhol-Anfrage annehmen und per E-Mail verschicken (ADR 0023); heute nur für Probe-Seiten |
+| `/anfrage-probe` | Anfrage-Probe mit den Beispielhäusern – nur mit `STUDIO_REQUEST_PROBE=local` und über localhost |
 
 ## Beispielseiten veröffentlichen (GitHub Pages)
 
@@ -85,6 +88,20 @@ In `.env.local` `GOOGLE_PLACES_API_KEY` und `STUDIO_LEAD_DEMOS=local` setzen, `n
 und `http://localhost:3000/demo` öffnen. Die Demo entsteht bei jedem Aufruf aus den aktuellen
 Google-Angaben; gespeichert wird nichts (ADR 0021). Jeder Aufruf ist eine kostenpflichtige
 Enterprise-Anfrage – in der Google Cloud einen Budget-Alarm setzen.
+
+## Anfragen per E-Mail ausprobieren (nur lokal)
+
+Die Anfrage-Probe schickt echte E-Mails über Resend – die an den „Betrieb“ gehen an das
+Studio-Postfach, die Eingangsbestätigung an die Adresse, die im Formular steht (ADR 0023).
+
+1. Bei Resend die Absenderdomain verifizieren (SPF/DKIM), EU-Region wählen, Tracking ausschalten.
+2. In `.env.local` setzen: `RESEND_API_KEY`, `EMAIL_FROM` (z. B. `Anfragen <anfragen@studio.example>`),
+   `STUDIO_OPERATOR_NAME`, `STUDIO_OPERATOR_ADDRESS`, `STUDIO_OPERATOR_EMAIL` und
+   `STUDIO_REQUEST_PROBE=local`.
+3. `npm run dev` starten und `http://localhost:3000/anfrage-probe` öffnen.
+
+Betreff und Text tragen „Probe“; gespeichert wird nichts. Die E2E-Tests nutzen statt Resend den lokalen
+Ersatz `tests/support/mock-resend.mjs` – dabei verlässt keine E-Mail den Rechner.
 
 ## Design-System (narrative-editorial)
 

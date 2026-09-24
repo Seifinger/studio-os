@@ -1,6 +1,6 @@
 # ARCHITECTURE.md – Zielarchitektur von studio-os
 
-Stand: 23.09.2026 · Status: Foundation. Was hier als „später“ markiert ist, existiert noch nicht.
+Stand: 24.09.2026 · Status: Stufe 5 abgeschlossen. Was hier als „später“ markiert ist, existiert noch nicht.
 Reihenfolge der Stufen: [`ROADMAP.md`](ROADMAP.md).
 
 ## 1. Zielbild
@@ -17,7 +17,7 @@ Das System hat drei Gesichter, aber **eine Codebasis und eine Fachschicht**:
 |---|---|---|---|
 | **Studio** | Das Studio-Team | Briefings führen, Design/Creative Direction und Bildplan erarbeiten, Kompositionen prüfen und freigeben, Website-Projekte verwalten, Leads recherchieren | später (Stufe 7, Leads Stufe 8; bis dahin gastro-v3) |
 | **Kundenseiten** | Gäste des Betriebs | Die individuell komponierte Website des Betriebs – als Demo (nicht öffentlich, ADR 0014) oder live | später (Referenzprojekt Stufe 4, live Stufe 6) |
-| **Betrieb** | Der Betrieb (z. B. der Wirt) | Anfragen empfangen (Stufe 5), später Speisekarte, Zeiten und Bilder selbst pflegen (Stufe 9), eigene Bestellungen (Stufe 10) | später |
+| **Betrieb** | Der Betrieb (z. B. der Wirt) | Anfragen per E-Mail empfangen (Stufe 5 ✅), später Speisekarte, Zeiten und Bilder selbst pflegen (Stufe 9), eigene Bestellungen (Stufe 10) | Anfragen ✅, Rest später |
 
 Branchenneutralität ist ein Architekturziel, kein Feature der ersten Stufen: Fachbegriffe, die nur für
 Restaurants gelten (Speisekarte, Tische, No-Show), liegen in einem eigenen Branchenmodul, nicht im
@@ -49,17 +49,21 @@ src/
 │  ├─ hash/              stabiler Hash für Gleichstände
 │  ├─ color/             WCAG-Kontrast
 │  ├─ leads/             Place Details → Profil im Speicher (Lead-Demos, ADR 0021)
+│  ├─ requests/          Anfragen: Felder, Regeln, Spam-Signale, Ziel über das Fakten-Gate, E-Mail-Texte, Antwortformat (ADR 0023)
 │  └─ publishing/        Veröffentlichungsprüfung des statischen Exports (ADR 0020)
 ├─ catalog/              Kuratierte Studio-Daten: Design Directions, 14 Beispielhäuser, Lead-Demo-Dramaturgie. Importiert nur domain.
 ├─ server/               Nur serverseitig (jede Datei beginnt mit `import "server-only"`).
 │  ├─ env.ts             Einzige Stelle, die process.env liest (Zod-validiert).
 │  ├─ health.ts          Health-Report.
 │  ├─ studio-operator.ts Betreiberangaben für Impressum/Datenschutz der Beispielseiten.
+│  ├─ local-only.ts      Prüfung „nur über localhost“ für Lead-Demos und Anfrage-Probe.
 │  ├─ leads/             Lead-Demo laden, lokale Freischaltung.
-│  └─ integrations/      Ports, Field Masks und Adapter (Google Place Details); später Supabase, Resend, Vercel, KI.
+│  ├─ requests/          Anfragen: Rate-Limit, Versand, HTTP-Grenze, Composition Root (ADR 0023).
+│  └─ integrations/      Ports, Field Masks und Adapter (Google Place Details, Resend); später Supabase, Vercel, KI.
 ├─ ui/                   (später) Funktionale UI des Studios: Button, Feld, Tabelle … – ein stabiles Token-Set.
 └─ compositions/         Kreative Website-Kompositionen. restaurant/: Seite aus Profil + Direction + Dramaturgie (ADR 0020);
-                         narrative-editorial/: erzählende Seite aus Theme + NarrativeConfig (ADR 0022).
+                         narrative-editorial/: erzählende Seite aus Theme + NarrativeConfig (ADR 0022);
+                         shared/: Anfrageformular (Markup geteilt, Aussehen je Komposition, ADR 0023).
 packages/
 └─ design-system/src/    Rein (zod + domain): themes/ (Schema, Basis, Küchen-Themes, Registry, CSS-Variablen),
                          composition/ (Sequenz), motion/ (Profil, reduced motion), media/ (Bildbriefings, Prompts).
@@ -92,14 +96,16 @@ app ──► server ──► domain
 Regeln 1, 2, 3 und 6 prüft `tests/unit/architecture.test.ts` bei jedem `npm test`, dazu: `catalog`
 importiert nur `domain` und `@studio/design-system` (Regel 7), `compositions` importiert weder
 `server` noch `ui` (Regel 8), `packages/design-system` importiert nur `zod`, eigene Dateien und
-`domain` und liest kein `process.env` (Regel 9).
-Regel 5 wird geprüft, sobald es einen Composition Root gibt.
+`domain` und liest kein `process.env` (Regel 9), Kompositionen importieren das scharfe
+Anfrageformular nicht – nur Seiten mit Endpunkt (Regel 10, damit Beispielseiten kein
+Formular-JavaScript laden). Regel 5: Der erste Composition Root ist
+`src/server/requests/request-service.ts`; eine automatische Prüfung folgt, sobald es mehrere gibt.
 
 ### Build-Ziele (ADR 0020)
 
 | Ziel | Befehl | Enthält | Wohin |
 |---|---|---|---|
-| `live` | `npm run build` | alles; `*.live.tsx/.live.ts` (Studio-Start, Health-Check, Lead-Demos) nur hier | Node-Server (lokal, später Vercel) |
+| `live` | `npm run build` | alles; `*.live.tsx/.live.ts` (Studio-Start, Health-Check, Lead-Demos, Anfrage-Route, Anfrage-Probe) nur hier | Node-Server (lokal, später Vercel) |
 | `showcases` | `npm run export:showcases` | statischer Export der Beispielseiten, Impressum, Datenschutz nach `out/` | GitHub Pages über `publish-showcases.yml` |
 
 ### Verhältnis zur Monorepo-Zielstruktur
@@ -160,13 +166,18 @@ vollständige Tabelle in ADR 0015 und ist in `src/domain/provenance/gate.ts` umg
 Kompositionen lesen Betriebsangaben ausschließlich über dieses Gate (umgesetzt in Stufe 1). Fehlen Pflichtangaben, meldet der Build „unvollständig“ mit Begründung, statt
 Füllinhalt zu erzeugen.
 
-### 4.3 Anfragen und Betrieb (später, in drei Phasen)
+### 4.3 Anfragen und Betrieb (in drei Phasen)
 
 ```
- Phase 1 – Conversion-Layer (Stufe 5), ohne Datenbank:
- Kundenseite (Formular) ──► Route Handler: Zod-Validierung, Rate-Limit, Spam-Schutz, Betrieb aus der Route
-        ──► E-Mail an den Betrieb + Eingangsbestätigung an den Gast (EmailSenderPort)
-        ──► keine Speicherung der Gästedaten
+ Phase 1 – Conversion-Layer (Stufe 5 ✅, ADR 0023), ohne Datenbank:
+ Kundenseite (Formular, progressive Verbesserung)
+        ──► POST /api/anfragen/[site]: Herkunft, Größe, Rate-Limit (IP), Spam-Signale,
+            Betrieb aus der Seitenkennung → Profil → Fakten-Gate (nie aus dem Formular),
+            Felder und Fachregeln (Ortszeit, Öffnungszeiten), Rate-Limit (Gast, Betrieb)
+        ──► E-Mail an den Betrieb (Antwort geht an den Gast) + Eingangsbestätigung an den Gast
+            (EmailSenderPort → Resend, Idempotency-Key gegen Doppelversand)
+        ──► keine Speicherung der Gästedaten; Logs ohne personenbezogene Daten
+        ──► Antwort: JSON (Formular mit JavaScript) oder kleine HTML-Seite (ohne JavaScript)
 
  Phase 2 – Betreiber-Dashboard (Stufe 9):
         … zusätzlich Datenbank (reservation_requests mit Löschfrist) ──► Betriebs-Oberfläche
@@ -195,7 +206,9 @@ Füllinhalt zu erzeugen.
 - Authentifizierung für Studio und Betriebe; Mandantentrennung in der Datenbank (Row Level Security)
   **und** serverseitig geprüft. Ein Test versucht immer den Zugriff auf fremde Daten.
 - Schreibende Aktionen mit CSRF-Schutz (bei Server Actions durch Next.js, bei eigenen Routen explizit).
-- Öffentliche Endpunkte (Reservierung) mit Rate-Limit und ohne Preisgabe von Kapazitätsdetails.
+- Öffentliche Endpunkte (Anfragen, ab Stufe 5) mit Rate-Limit, Herkunftsprüfung (`Origin`,
+  `Sec-Fetch-Site`), Größenlimit und ohne Preisgabe von Kapazitätsdetails; der Empfänger kommt nie aus
+  der Anfrage.
 
 **HTTP**
 - Sicherheits-Header in `next.config.ts` (`X-Content-Type-Options`, `Referrer-Policy`,
@@ -235,7 +248,7 @@ voraus. Die Umgebungsvariablen sind in `src/server/env.ts` bereits als *optional
 
 | Integration | Zweck | Port | Umgebungsvariablen | Ab Stufe | Kosten / Hinweise |
 |---|---|---|---|---|---|
-| Resend | Reservierungs- und Abhol-Anfragen, Eingangsbestätigungen, Systemmails | `EmailSenderPort` (Typ vorhanden) | `RESEND_API_KEY`, `EMAIL_FROM` | 5 | Free-Tier vorhanden; Absenderdomain verifizieren. |
+| Resend | Tisch- und Abhol-Anfragen, Eingangsbestätigungen (ADR 0023) | `EmailSenderPort`, Adapter `resend.ts` (per `fetch`, ohne SDK) | `RESEND_API_KEY`, `EMAIL_FROM`; `RESEND_BASE_URL` nur für Tests/Proxy; Probe: `STUDIO_REQUEST_PROBE` (`off`/`local`) + `STUDIO_OPERATOR_EMAIL` | 5 ✅ | Free: 100 Mails/Tag (= 50 Anfragen). Absenderdomain verifizieren (SPF/DKIM), EU-Region, AV-Vertrag, Tracking aus. |
 | Externe Buchungssysteme (Resmio, OpenTable, Quandoo …), WhatsApp | Vorhandene Reservierungswege des Betriebs einbinden | zunächst nur Links im Content-Modell | – | 1 (Modell), 5 (Seite) | Keine Einbettung fremder Skripte ohne ADR (Datenschutz, Performance). |
 | GitHub Pages | Statische Beispielseiten (Lead-Demos nie, ADR 0016/0021) | – (Export + `publish-showcases.yml`) | Build: `STUDIO_BUILD_TARGET`, `SHOWCASE_BASE_PATH`; Impressum: `STUDIO_OPERATOR_NAME/ADDRESS/EMAIL` | 4 ✅ | Kostenlos nur aus öffentlichem Repository (eigenes Repo für den Export); Seiten immer öffentlich; nicht für Kundenseiten. |
 | Vercel | Hosting, Preview-URLs für Demos, Custom Domains; später automatisierte Deployments je Kunde | `DeploymentPort` (entsteht bei Bedarf) | `VERCEL_TOKEN` (erst mit Automatisierung) | 4 (Previews), 6 (live) | Hobby-Tarif laut Vercel nur für nicht-kommerzielle Nutzung → vor dem ersten Live-Kunden Pro. Die App bleibt auf jedem Node-Host lauffähig. |

@@ -17,6 +17,7 @@ import { assertRenderable } from "@/domain/quality/render-gate";
 
 import { isVisible, type RenderProfile, show } from "../restaurant/model";
 import { NAME_FIT } from "../restaurant/theme";
+import { RequestForm, type RequestFormClasses, type RequestWiring } from "../shared/request-form";
 import { ContextualCta } from "./contextual-cta";
 import styles from "./narrative.module.css";
 
@@ -28,6 +29,8 @@ export type NarrativeChrome = {
   readonly overviewHref?: string | undefined;
   readonly impressumHref?: string | undefined;
   readonly datenschutzHref?: string | undefined;
+  /** Zusätzlicher Hinweis in der Kopfleiste (z. B. Anfrage-Probe). */
+  readonly notice?: string | undefined;
 };
 
 export type NarrativeSiteProps = {
@@ -36,6 +39,22 @@ export type NarrativeSiteProps = {
   readonly config: NarrativeConfig;
   readonly context: GateContext;
   readonly chrome?: NarrativeChrome;
+  /** Anfrage-Route und scharfes Formular (ADR 0023). Ohne sie bleibt das Formular gesperrt. */
+  readonly requests?: RequestWiring | undefined;
+};
+
+const FORM_CLASSES: RequestFormClasses = {
+  form: styles.form,
+  field: styles.field,
+  fieldWide: styles.fieldWide,
+  hint: styles.fieldHint,
+  error: styles.fieldError,
+  footer: styles.formFoot,
+  submit: styles.submit,
+  note: styles.small,
+  alert: styles.formAlert,
+  success: styles.formSuccess,
+  successTitle: styles.formSuccessTitle,
 };
 
 type Cta = { readonly href: string; readonly label: string; readonly demoOnly: boolean };
@@ -188,7 +207,7 @@ function MenuBody({ menu, theme }: { menu: Menu; theme: Theme }) {
   );
 }
 
-export function NarrativeSite({ theme, profile, config, context, chrome = {} }: NarrativeSiteProps) {
+export function NarrativeSite({ theme, profile, config, context, chrome = {}, requests }: NarrativeSiteProps) {
   // Bricht ab, wenn eine Angabe gegen das Fakten-Gate verstößt (ADR 0018).
   assertRenderable(profile, context);
 
@@ -358,13 +377,12 @@ export function NarrativeSite({ theme, profile, config, context, chrome = {} }: 
         );
       }
       case "reservation": {
-        const demo = context.kind !== "customer";
         return (
           <section key="reservation" {...common} className={styles.section} aria-labelledby="reservieren-titel">
             <div className={`${styles.wrap} ${styles.split}`}>
               <div>
                 <SectionHead step={step} label="Reservieren" id="reservieren-titel" />
-                <p className={styles.body}>Die Anfrage geht per E-Mail an das Haus. Sie bekommen eine Antwort, sobald der Tisch bestätigt ist.</p>
+                <p className={styles.body}>Die Anfrage geht per E-Mail an das Haus. Sie bekommen sofort eine Eingangsbestätigung, die Zusage kommt vom Haus.</p>
                 {isVisible(notes) ? (
                   <ul className={styles.notes}>
                     {notes.value.map((note) => (
@@ -373,42 +391,13 @@ export function NarrativeSite({ theme, profile, config, context, chrome = {} }: 
                   </ul>
                 ) : null}
               </div>
-              <form className={styles.form} aria-describedby={demo ? "anfrage-demo" : undefined}>
-                <div className={styles.field}>
-                  <label htmlFor="anfrage-name">Name</label>
-                  <input id="anfrage-name" name="name" autoComplete="name" required />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="anfrage-telefon">Telefon</label>
-                  <input id="anfrage-telefon" name="telefon" type="tel" autoComplete="tel" inputMode="tel" required />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="anfrage-datum">Datum</label>
-                  <input id="anfrage-datum" name="datum" type="date" required />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="anfrage-uhrzeit">Uhrzeit</label>
-                  <input id="anfrage-uhrzeit" name="uhrzeit" type="time" step={900} required />
-                </div>
-                <div className={styles.field}>
-                  <label htmlFor="anfrage-personen">Personen</label>
-                  <input id="anfrage-personen" name="personen" type="number" inputMode="numeric" min={1} max={12} required />
-                </div>
-                <div className={styles.fieldWide}>
-                  <label htmlFor="anfrage-nachricht">Anmerkung (optional)</label>
-                  <textarea id="anfrage-nachricht" name="nachricht" rows={3} />
-                </div>
-                <div className={styles.formFoot}>
-                  <button type="submit" className={styles.submit} disabled={demo}>
-                    Anfrage senden
-                  </button>
-                  {demo ? (
-                    <p id="anfrage-demo" className={styles.small}>
-                      In dieser Demo wird nichts verschickt. Auf der echten Website landet die Anfrage per E-Mail beim Haus.
-                    </p>
-                  ) : null}
-                </div>
-              </form>
+              <RequestForm
+                kind="table"
+                idPrefix="anfrage"
+                requests={requests}
+                demoNote="In dieser Demo wird nichts verschickt. Auf der echten Website landet die Anfrage per E-Mail beim Haus."
+                classes={FORM_CLASSES}
+              />
             </div>
           </section>
         );
@@ -480,6 +469,7 @@ export function NarrativeSite({ theme, profile, config, context, chrome = {} }: 
             <span>{policy.notice}</span>
             {chrome.overviewHref ? <Link href={chrome.overviewHref}>Alle Beispiele</Link> : null}
           </p>
+          {chrome.notice ? <p className={styles.wrap}>{chrome.notice}</p> : null}
         </div>
       ) : null}
 

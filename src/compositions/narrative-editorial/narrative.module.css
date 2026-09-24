@@ -873,9 +873,65 @@
   gap: var(--ne-space-xs);
 }
 
+/* Fehler ohne eigene Warnfarbe: erkennbar an Balken, Stärke und Text – nie nur an Farbe. */
+.form [aria-invalid="true"] {
+  border-width: 2px;
+  border-color: var(--ne-ink);
+}
+
+.fieldHint {
+  color: var(--ne-ink-muted);
+  font-size: var(--ne-size-small);
+}
+
+.fieldError,
+.formAlert {
+  padding-left: var(--ne-space-s);
+  border-left: 3px solid var(--ne-primary);
+  font-size: var(--ne-size-small);
+  font-weight: 600;
+}
+
+/* Fokus nach Fehler oder Versand nie unter Kopf oder Handlungsleiste (WCAG 2.4.11). */
+.form input,
+.form textarea,
+.form button,
+.formSuccess {
+  scroll-margin-block: 5rem;
+}
+
+.formSuccess {
+  display: grid;
+  align-self: start;
+  align-content: start;
+  gap: var(--ne-space-s);
+  margin-top: var(--ne-space-l);
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  border: 1px solid var(--ne-ink);
+  border-radius: var(--ne-radius);
+  background-color: var(--ne-paper-raised);
+}
+
+@media (min-width: 56rem) {
+  .formSuccess {
+    margin-top: 0;
+  }
+}
+
+.formSuccessTitle {
+  font-family: var(--ne-display-font);
+  font-size: var(--ne-size-h3);
+  line-height: 1.1;
+}
+
 .submit {
   justify-self: start;
   cursor: pointer;
+}
+
+.submit[aria-disabled="true"] {
+  cursor: progress;
+  opacity: 0.7;
 }
 
 .submit:disabled {

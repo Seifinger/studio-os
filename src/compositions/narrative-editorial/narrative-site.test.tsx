@@ -9,6 +9,7 @@ import { TIFFINSTUBE_RAO_THEME, tiffinstubeRaoNarrative, tiffinstubeRaoProfile }
 import { checkPageCopy } from "@/domain/quality/copy-rules";
 import { checkMarkup, checkStylesheet } from "@/domain/quality/design-rules";
 import { RenderGateError } from "@/domain/quality/render-gate";
+import { themeVariables } from "@studio/design-system/themes/css";
 import { THEME_REGISTRY } from "@studio/design-system/themes/registry";
 
 import { NarrativeSite } from "./narrative-site";
@@ -122,6 +123,13 @@ describe("NarrativeSite – Fakten-Gate und Stylesheet", () => {
     const css = readFileSync(path.join(here, "narrative.module.css"), "utf8");
     expect(checkStylesheet(css).filter((finding) => finding.severity === "fehler")).toEqual([]);
     expect(css.replace(/\/\*[\s\S]*?\*\//g, "").match(/#[0-9a-f]{3,8}\b|rgba?\(|hsla?\(/gi) ?? []).toEqual([]);
+  });
+
+  it("nutzt nur Theme-Variablen, die es gibt (Regression: --ne-size-h statt --ne-size-h3)", () => {
+    const css = readFileSync(path.join(here, "narrative.module.css"), "utf8");
+    const defined = new Set(Object.keys(themeVariables(theme)));
+    const used = new Set([...css.matchAll(/var\((--ne-[a-z0-9-]+)/g)].map((match) => match[1] ?? ""));
+    expect([...used].filter((name) => !defined.has(name))).toEqual([]);
   });
 
   it("bewegt nichts ohne Freigabe: jede Animation steht unter prefers-reduced-motion: no-preference", () => {
