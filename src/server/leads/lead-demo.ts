@@ -5,6 +5,7 @@ import { factsFromPlace, type PlaceFacts, placeDemoBlocker } from "@/domain/lead
 import { type EnvSource, parseServerEnv } from "../env";
 import { createGooglePlaces } from "../integrations/google-places";
 import { IntegrationNotConfiguredError, type PlaceDetailsPort } from "../integrations/ports";
+import { isLoopbackHost } from "../local-only";
 
 // Lead-Demos (ADR 0016 Option B, ADR 0021): persönliche Konzept-Demo für einen echten Betrieb,
 // gerendert beim Aufruf aus live abgerufenen Place Details. Nichts wird gespeichert oder
@@ -24,13 +25,11 @@ export type LeadDemoResult =
   | { readonly kind: "notFound" }
   | { readonly kind: "blocked"; readonly reason: string };
 
-const LOOPBACK_HOST = /^(?:localhost|127(?:\.\d{1,3}){3}|\[::1\])(?::\d{1,5})?$/i;
-
 /** Nur mit STUDIO_LEAD_DEMOS=local und nur über localhost – nie auf einem öffentlichen Host. */
 export function leadDemosAllowed(host: string | null, source?: EnvSource): boolean {
   const env = parseServerEnv(source);
   if (!env.ok || env.env.STUDIO_LEAD_DEMOS !== "local") return false;
-  return host !== null && LOOPBACK_HOST.test(host.trim());
+  return isLoopbackHost(host);
 }
 
 export function placesFromEnv(source?: EnvSource): PlaceDetailsPort {

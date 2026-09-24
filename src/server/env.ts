@@ -43,6 +43,22 @@ const REQUIRED_TOGETHER: readonly Pair[] = [
   ["STUDIO_OPERATOR_NAME", "STUDIO_OPERATOR_EMAIL"],
 ];
 
+// Adresse der Resend-API: Standard ist https://api.resend.com. Abweichend nur für Tests (lokaler
+// Ersatzserver) oder einen eigenen Proxy – unverschlüsselt ausschließlich auf localhost (ADR 0023).
+const LOOPBACK_HOSTNAME = /^(?:localhost|127(?:\.\d{1,3}){3}|\[::1\])$/i;
+const optionalApiBase = z.preprocess(
+  emptyToUndefined,
+  z
+    .url({ protocol: /^https?$/, error: "muss eine http(s)-URL sein" })
+    .refine((value) => {
+      // Ungültige URLs meldet schon die Prüfung davor; Zod läuft trotzdem weiter.
+      if (!URL.canParse(value)) return true;
+      const url = new URL(value);
+      return url.protocol === "https:" || LOOPBACK_HOSTNAME.test(url.hostname);
+    }, "http nur für localhost, sonst https")
+    .optional(),
+);
+
 const optionalText = z.preprocess(emptyToUndefined, z.string().trim().min(3).max(200).optional());
 const optionalEmail = z.preprocess(emptyToUndefined, z.email({ error: "keine gültige E-Mail-Adresse" }).optional());
 
@@ -58,6 +74,7 @@ export const serverEnvSchema = z
     SUPABASE_SERVICE_ROLE_KEY: optionalSecret,
     RESEND_API_KEY: optionalSecret,
     EMAIL_FROM: optionalSender,
+    RESEND_BASE_URL: optionalApiBase,
     VERCEL_TOKEN: optionalSecret,
     ANTHROPIC_API_KEY: optionalSecret,
     // Anbieterkennzeichnung (§ 5 DDG) der öffentlichen Beispielseiten – kein Geheimnis, aber
@@ -65,6 +82,9 @@ export const serverEnvSchema = z
     // Lead-Demos mit Live-Daten aus Google Places: nur "local" schaltet sie ein, und dann nur für
     // Aufrufe über localhost (ADR 0016 Option B, ADR 0021).
     STUDIO_LEAD_DEMOS: z.preprocess(emptyToUndefined, z.enum(["off", "local"], { error: 'muss "off" oder "local" sein' }).default("off")),
+    // Anfrage-Probe (/anfrage-probe): echte E-Mails mit einem Beispielhaus an STUDIO_OPERATOR_EMAIL –
+    // nur mit "local" und nur für Aufrufe über localhost (ADR 0023).
+    STUDIO_REQUEST_PROBE: z.preprocess(emptyToUndefined, z.enum(["off", "local"], { error: 'muss "off" oder "local" sein' }).default("off")),
     STUDIO_OPERATOR_NAME: optionalText,
     STUDIO_OPERATOR_ADDRESS: optionalText,
     STUDIO_OPERATOR_EMAIL: optionalEmail,
